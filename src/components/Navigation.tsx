@@ -65,8 +65,8 @@ export function Navigation({ darkMode, toggleDarkMode }: NavigationProps) {
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      isScrolled
-        ? 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg shadow-lg'
+      location.pathname === '/' || isScrolled
+        ? 'bg-pink-50/90 dark:bg-purple-900/10 backdrop-blur-lg shadow-lg'
         : 'bg-transparent'
     }`}>
       <div className="max-w-7xl mx-auto px-6 py-4">

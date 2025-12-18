@@ -62,7 +62,7 @@ export function UserNavbar({ darkMode, toggleDarkMode }: UserNavbarProps) {
   const navLinks = getNavLinks();
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg shadow-lg' : 'bg-transparent'}`}>
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-pink-50/90 dark:bg-purple-900/90 backdrop-blur-lg shadow-lg' : 'bg-transparent'}`}>
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <Link to={getProfileLink()} className="flex items-center gap-2 cursor-pointer group">
