@@ -13,7 +13,7 @@ It includes:
 
 ## Tech stack
 
-- **Frontend**: React 18, TypeScript, Vite
+- **Frontend**: JS React 18, TypeScript, Vite
 - **Styling**: Tailwind CSS, custom components
 - **Routing**: `react-router-dom`
 - **State/UI**: React hooks, dark mode support
