@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MoneyMap — Financial Tracker (Final)</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root{
+      --bg:#071029; --card:#0b1220; --accent:#7dd3fc; --muted:#94a3b8; --success:#10b981; --danger:#ef4444;
+      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%; margin:0; background:linear-gradient(180deg,#071029 0%, #071724 60%); color:#e6eef8}
+    .app{max-width:1100px;margin:28px auto;padding:20px}
+    .card{background:linear-gradient(180deg,var(--card), rgba(8,10,12,0.6)); border-radius:14px;padding:18px;box-shadow:0 6px 30px rgba(2,6,23,0.6);}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+    h1{font-size:20px;margin:0;letter-spacing:0.2px}
+    .small{color:var(--muted);font-size:13px}
+
+    .auth{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
+    input,select,button,textarea{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);padding:10px;border-radius:8px;color:inherit}
+    input::placeholder{color:var(--muted)}
+    .btn{cursor:pointer;border:none;padding:10px 14px;border-radius:10px;font-weight:600;letter-spacing:0.2px}
+    .btn-primary{background:linear-gradient(90deg,var(--accent),#7ce0ff);color:#062131;box-shadow:0 6px 18px rgba(34,211,238,0.08);transition:transform .18s ease}
+    .btn-primary:hover{transform:translateY(-3px)}
+    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06)}
+
+    .main-menu{display:flex;gap:12px;margin:14px 0}
+    .menu-card{flex:1;padding:18px;border-radius:12px;text-align:center;cursor:pointer;transition:transform .18s ease, box-shadow .18s;}
+    .menu-card:hover{transform:translateY(-6px);box-shadow:0 12px 30px rgba(8,12,20,0.6)}
+
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+
+    table{width:100%;border-collapse:collapse;margin-top:12px}
+    th,td{padding:10px;border-bottom:1px dashed rgba(255,255,255,0.03);text-align:left;font-size:14px}
+    tr.negative td{background:rgba(239,68,68,0.04)}
+    tr.positive td{background:rgba(16,185,129,0.04)}
+
+    .charts{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:12px}
+    .full{grid-column:1/-1}
+
+    .focus{position:fixed;inset:0;background:rgba(1,4,8,0.7);display:flex;align-items:center;justify-content:center;padding:18px;z-index:40}
+    .focus .card{max-width:1000px;width:100%}
+
+    .notification{position:fixed;right:18px;bottom:18px;padding:12px 16px;border-radius:10px;font-weight:700;box-shadow:0 8px 28px rgba(2,6,23,0.6)}
+    .notify-red{background:rgba(239,68,68,0.95);color:white}
+    .notify-green{background:rgba(16,185,129,0.95);color:white}
+
+    .muted{color:var(--muted)}
+    .row{display:flex;gap:10px;align-items:center}
+    .spacer{flex:1}
+    .balance{font-size:22px;font-weight:800}
+
+    @media(max-width:880px){.auth{grid-template-columns:1fr}.charts{grid-template-columns:1fr}}
+    .small-action{font-size:12px;padding:6px 8px;border-radius:8px;background:rgba(255,255,255,0.03);cursor:pointer}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div>
+        <h1>MoneyMap — NativeJS Financial Tracker</h1>
+        <div class="small">Local-only — stores data in your browser (localStorage)</div>
+      </div>
+      <div id="currentUserInfo" class="small muted">Not logged in</div>
+    </header>
+
+    <div class="card">
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <div style="flex:1">
+          <div class="auth">
+            <div>
+              <label>Full Name</label>
+              <input id="name" placeholder="Akshay Singh" />
+            </div>
+            <div>
+              <label>Email</label>
+              <input id="email" placeholder="email@example.com" />
+            </div>
+            <div>
+              <label>Phone</label>
+              <input id="phone" placeholder="+91 98xxxxxxxx" />
+            </div>
+            <div>
+              <label>Password</label>
+              <input id="password" type="password" placeholder="create a password" />
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;min-width:220px">
+          <button class="btn btn-primary" id="btnRegister">Register / Save</button>
+          <button class="btn btn-ghost" id="btnLogin">Login</button>
+          <button class="btn" id="btnLogout" style="display:none">Logout</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="appArea" style="display:none">
+      <div class="card" style="margin-top:12px">
+        <div class="row">
+          <div>
+            <div class="small">Bank Balance</div>
+            <div class="balance" id="bankBalance">₹ 0</div>
+            <div class="small muted">Records: <span id="recordCount">0</span></div>
+          </div>
+          <div class="spacer"></div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-primary" id="openDebitCredit">Debit - Credit</button>
+            <button class="btn btn-ghost" id="openAnalytics">Analytics</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Debit / Credit Pane -->
+      <div id="debitCreditPane" style="display:none;margin-top:12px">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <h3 style="margin:0">Debit / Credit</h3>
+            <button class="btn btn-ghost" id="backToMainDC">Back</button>
+          </div>
+
+          <div style="margin-top:12px">
+            <div class="form-grid">
+              <div>
+                <label>Type</label>
+                <select id="dcType">
+                  <option value="received">Received</option>
+                  <option value="paid">Paid</option>
+                </select>
+              </div>
+              <div>
+                <label>Item / Service</label>
+                <input id="dcItem" placeholder="Salary / Grocery / Rent" />
+              </div>
+              <div>
+                <label>Amount (₹)</label>
+                <input id="dcAmount" type="number" placeholder="0" />
+              </div>
+            </div>
+            <div style="margin-top:12px;display:flex;gap:10px">
+              <button class="btn btn-primary" id="saveRecord">Save Record</button>
+              <div class="spacer"></div>
+            </div>
+
+            <div id="recordsTableArea">
+              <table id="recordsTable">
+                <thead>
+                  <tr><th>Time</th><th>Type</th><th>Item</th><th>Amount</th><th>Balance</th></tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Analytics Pane -->
+      <div id="analyticsPane" style="display:none;margin-top:12px">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <h3 style="margin:0">Analytics</h3>
+            <div style="display:flex;gap:8px;align-items:center">
+              <label class="small muted">Period:</label>
+              <select id="periodSelect">
+                <option value="all">Complete Period</option>
+                <option value="month">Choose Month</option>
+                <option value="year">Choose Year</option>
+              </select>
+              <input id="periodValue" placeholder="YYYY or YYYY-MM" style="display:none"/>
+              <button class="btn btn-ghost" id="backToMainAN">Back</button>
+            </div>
+          </div>
+
+          <div class="charts full" style="margin-top:12px">
+            <div class="card">
+              <h4 class="small muted">Spending (Paid) by Item</h4>
+              <canvas id="piePaid" style="height:240px"></canvas>
+            </div>
+            <div class="card">
+              <h4 class="small muted">Received by Item</h4>
+              <canvas id="pieReceived" style="height:240px"></canvas>
+            </div>
+            <div class="card">
+              <h4 class="small muted">Bank Balance vs Time (and Debt periods)</h4>
+              <canvas id="balanceLine" style="height:220px"></canvas>
+            </div>
+            <div class="card">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <h4 class="small muted">Paid vs Received (Live)</h4>
+                <div>
+                  <span class="small-action" id="showOnlyReceived">Show Received</span>
+                  <span class="small-action" id="showOnlyPaid">Show Paid</span>
+                  <span class="small-action" id="showBoth">Show Both</span>
+                </div>
+              </div>
+              <canvas id="paidReceivedLine" style="height:220px"></canvas>
+            </div>
+          </div>
+
+          <div style="margin-top:12px">
+            <h4 class="small muted">Debt table (Periods when balance &lt; 0)</h4>
+            <table id="debtTable">
+              <thead><tr><th>Time</th><th>Balance</th><th>Notes</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <div id="focusModal" class="focus" style="display:none">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h3 id="focusTitle">Chart</h3>
+          <button class="btn btn-ghost" id="closeFocus">Close</button>
+        </div>
+        <div style="margin-top:12px"><canvas id="focusCanvas"></canvas></div>
+      </div>
+    </div>
+
+    <div id="notification" style="display:none" class="notification"></div>
+
+  </div>
+
+<script>
+  // ---------------- Utilities & Storage ----------------
+  const qs = s => document.querySelector(s);
+  const formatMoney = v => '₹ ' + Number(v).toLocaleString('en-IN', {maximumFractionDigits:2});
+  const nowIso = () => new Date().toISOString();
+
+  const LS_USERS = 'moneymap_users_v2';
+  const LS_CURRENT = 'moneymap_current_v2';
+
+  function loadUsers(){ return JSON.parse(localStorage.getItem(LS_USERS) || '{}'); }
+  function saveUsers(u){ localStorage.setItem(LS_USERS, JSON.stringify(u)); }
+  function setCurrent(email){ localStorage.setItem(LS_CURRENT, email); }
+  function getCurrent(){ return localStorage.getItem(LS_CURRENT); }
+
+  // ---------------- Auth ----------------
+  qs('#btnRegister').addEventListener('click', ()=>{
+    const name = qs('#name').value.trim();
+    const email = qs('#email').value.trim().toLowerCase();
+    const phone = qs('#phone').value.trim();
+    const password = qs('#password').value;
+    if(!name||!email||!password){ alert('enter name, email and password'); return; }
+    const users = loadUsers();
+    users[email] = users[email] || {name, email, phone, password, records:[], createdAt: nowIso()};
+    users[email].name = name; users[email].phone = phone; users[email].password = password;
+    saveUsers(users); setCurrent(email);
+    qs('#currentUserInfo').textContent = name + ' ('+email+')';
+    showAppFor(email);
+    toast('Saved & logged in', 'green');
+  });
+
+  qs('#btnLogin').addEventListener('click', ()=>{
+    const email = qs('#email').value.trim().toLowerCase(); const password = qs('#password').value;
+    const users = loadUsers();
+    if(!users[email] || users[email].password !== password){ alert('invalid cred'); return; }
+    setCurrent(email);
+    qs('#currentUserInfo').textContent = users[email].name + ' ('+email+')';
+    showAppFor(email);
+    toast('Logged in', 'green');
+  });
+
+  qs('#btnLogout').addEventListener('click', ()=>{
+    localStorage.removeItem(LS_CURRENT);
+    qs('#currentUserInfo').textContent='Not logged in';
+    qs('#appArea').style.display='none'; qs('#btnLogout').style.display='none';
+  });
+
+  function showAppFor(email){
+    const users = loadUsers(); const user = users[email]; if(!user) return;
+    qs('#appArea').style.display='block'; qs('#btnLogout').style.display='inline-block';
+    qs('#name').value = user.name; qs('#phone').value = user.phone; qs('#email').value = user.email; qs('#password').value = user.password;
+    renderAll();
+  }
+
+  function getUser(){ const email = getCurrent(); if(!email) return null; const users = loadUsers(); return users[email] || null; }
+  function persistUser(user){ const users = loadUsers(); users[user.email] = user; saveUsers(users); }
+
+  // ---------------- UI Navigation ----------------
+  qs('#openDebitCredit').addEventListener('click', ()=>{ qs('#debitCreditPane').style.display='block'; qs('#analyticsPane').style.display='none'; });
+  qs('#backToMainDC').addEventListener('click', ()=>{ qs('#debitCreditPane').style.display='none'; });
+  qs('#openAnalytics').addEventListener('click', ()=>{ qs('#analyticsPane').style.display='block'; qs('#debitCreditPane').style.display='none'; renderCharts(); });
+  qs('#backToMainAN').addEventListener('click', ()=>{ qs('#analyticsPane').style.display='none'; });
+
+  // ---------------- Records ----------------
+  qs('#saveRecord').addEventListener('click', ()=>{
+    const user = getUser(); if(!user){ alert('login first'); return; }
+    const type = qs('#dcType').value; const item = qs('#dcItem').value.trim()||'(no item)'; const amount = Number(qs('#dcAmount').value || 0);
+    if(!amount || amount<=0){ alert('enter positive amount'); return; }
+    const prevBalance = user.records.length? user.records[user.records.length-1].balance : 0;
+    const newBalance = type==='received' ? prevBalance + amount : prevBalance - amount;
+    const rec = {id:Math.random().toString(36).slice(2), time: new Date().toISOString(), type, item, amount, balance:newBalance};
+    user.records.push(rec); persistUser(user);
+    qs('#dcAmount').value=''; qs('#dcItem').value='';
+    renderAll();
+    checkThresholds(newBalance);
+    toast('Record added', 'green');
+  });
+
+  function renderAll(){
+    const user = getUser(); if(!user) return;
+    const lastBalance = user.records.length? user.records[user.records.length-1].balance : 0;
+    qs('#bankBalance').textContent = formatMoney(lastBalance);
+    qs('#recordCount').textContent = user.records.length;
+    renderRecordsTable();
+  }
+
+  function renderRecordsTable(){
+    const user = getUser(); if(!user) return;
+    const tbody = qs('#recordsTable tbody'); tbody.innerHTML='';
+    user.records.slice().reverse().forEach(r=>{
+      const tr = document.createElement('tr'); tr.className = r.balance<0? 'negative':'positive';
+      tr.innerHTML = `<td>${new Date(r.time).toLocaleString()}</td><td>${r.type}</td><td>${r.item}</td><td>${formatMoney(r.amount)}</td><td>${formatMoney(r.balance)}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // ---------------- Charts & Analytics ----------------
+  let piePaidChart, pieReceivedChart, balanceLineChart, paidReceivedChart;
+
+  function filterRecordsByPeriod(records){
+    const period = qs('#periodSelect').value; const val = qs('#periodValue').value.trim();
+    if(period==='all' || !val) return records;
+    if(period==='month'){ return records.filter(r=> r.time.startsWith(val)); }
+    if(period==='year'){ return records.filter(r=> r.time.startsWith(val)); }
+    return records;
+  }
+
+  qs('#periodSelect').addEventListener('change', ()=>{
+    const p = qs('#periodSelect').value;
+    if(p==='all'){ qs('#periodValue').style.display='none'; qs('#periodValue').value=''; renderCharts(); }
+    else { qs('#periodValue').style.display='inline-block'; qs('#periodValue').placeholder = p==='month'? 'YYYY-MM':'YYYY'; }
+  });
+  qs('#periodValue').addEventListener('change', ()=>renderCharts());
+
+  function aggregateByItem(records, wantType){
+    const map={}; records.forEach(r=>{ if(r.type===wantType){ map[r.item] = (map[r.item]||0)+r.amount }}); 
+    return Object.keys(map).map(k=>({item:k, amount:map[k]})).sort((a,b)=>b.amount-a.amount);
+  }
+
+  function renderCharts(){
+    const user = getUser(); if(!user) return;
+    const filtered = filterRecordsByPeriod(user.records);
+
+    // pies
+    const paidData = aggregateByItem(filtered, 'paid');
+    const receivedData = aggregateByItem(filtered, 'received');
+
+    const makePie = (ctx, labels, data, chartRef, title)=>{
+      if(chartRef) chartRef.destroy();
+      return new Chart(ctx, {type:'pie', data:{labels, datasets:[{data}]}, options:{plugins:{legend:{position:'bottom'},title:{display:true,text:title}}}});
+    }
+
+    piePaidChart = makePie(qs('#piePaid'), paidData.map(x=>x.item), paidData.map(x=>x.amount), piePaidChart, 'Spent by Item');
+    pieReceivedChart = makePie(qs('#pieReceived'), receivedData.map(x=>x.item), receivedData.map(x=>x.amount), pieReceivedChart, 'Received by Item');
+
+    // balance vs time
+    const sorted = filtered.slice().sort((a,b)=> new Date(a.time)-new Date(b.time));
+    const labels = sorted.map(r=> new Date(r.time).toLocaleString());
+    const balances = sorted.map(r=> r.balance);
+    if(balanceLineChart) balanceLineChart.destroy();
+    balanceLineChart = new Chart(qs('#balanceLine'), {type:'line', data:{labels, datasets:[{label:'Balance', data:balances, fill:true, backgroundColor:'rgba(30,120,255,0.12)', borderColor:'#1e78ff', tension:0.3}]}, options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:false}}}});
+
+    // paid vs received lines + colored area between them
+    const cumulativeReceived = []; const cumulativePaid = []; let rsum=0, psum=0;
+    sorted.forEach(r=>{ if(r.type==='received') rsum+=r.amount; else psum+=r.amount; cumulativeReceived.push(rsum); cumulativePaid.push(psum); });
+    if(paidReceivedChart) { paidReceivedChart.destroy(); paidReceivedChart = null; }
+
+    // plugin that paints area between two datasets segment-by-segment
+    const fillBetweenPlugin = {
+      id: 'fillBetween',
+      beforeDatasetsDraw(chart, args, options){
+        const metaA = chart.getDatasetMeta(0);
+        const metaB = chart.getDatasetMeta(1);
+        if(!metaA || !metaB) return;
+        const ctx = chart.ctx;
+        ctx.save();
+
+        const pointsA = metaA.data;
+        const pointsB = metaB.data;
+        // draw per-segment polygon to follow lines (uses straight segments between points)
+        for(let i=0; i < Math.min(pointsA.length, pointsB.length) - 1; i++){
+          const pA1 = pointsA[i].getProps(['x','y'], true);
+          const pA2 = pointsA[i+1].getProps(['x','y'], true);
+          const pB1 = pointsB[i].getProps(['x','y'], true);
+          const pB2 = pointsB[i+1].getProps(['x','y'], true);
+
+          // Create polygon that follows the two segments
+          ctx.beginPath();
+          ctx.moveTo(pA1.x, pA1.y);
+          // follow A segment
+          ctx.lineTo(pA2.x, pA2.y);
+          // go to B segment end
+          ctx.lineTo(pB2.x, pB2.y);
+          // follow B segment backwards
+          ctx.lineTo(pB1.x, pB1.y);
+          ctx.closePath();
+
+          // choose color based on midpoint comparison (smoother than pointwise)
+          const midA = (chart.data.datasets[0].data[i] + chart.data.datasets[0].data[i+1]) / 2;
+          const midB = (chart.data.datasets[1].data[i] + chart.data.datasets[1].data[i+1]) / 2;
+          if(midA > midB){
+            ctx.fillStyle = 'rgba(16,185,129,0.15)'; // green
+            ctx.strokeStyle = 'rgba(16,185,129,0.22)';
+          } else {
+            ctx.fillStyle = 'rgba(239,68,68,0.12)'; // red
+            ctx.strokeStyle = 'rgba(239,68,68,0.22)';
+          }
+          ctx.fill();
+          // subtle border to blend
+          ctx.lineWidth = 0.6;
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+    };
+
+    const pr = qs('#paidReceivedLine');
+    paidReceivedChart = new Chart(pr, {
+      type:'line',
+      data:{labels, datasets:[
+        {label:'Received', data:cumulativeReceived, borderColor: '#10b981', backgroundColor:'rgba(16,185,129,0.08)', fill:false, tension:0.3, pointRadius:3},
+        {label:'Paid', data:cumulativePaid, borderColor: '#ef4444', backgroundColor:'rgba(239,68,68,0.06)', fill:false, tension:0.3, pointRadius:3}
+      ]},
+      options:{plugins:{title:{display:true,text:'Cumulative Received vs Paid (area shows balance sign)'}}, interaction:{mode:'index',intersect:false}, scales:{y:{beginAtZero:true}}},
+      plugins:[fillBetweenPlugin]
+    });
+
+    // debt table
+    const debtBody = qs('#debtTable tbody'); debtBody.innerHTML='';
+    sorted.filter(r=>r.balance<0).forEach(r=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${new Date(r.time).toLocaleString()}</td><td>${formatMoney(r.balance)}</td><td>Balance negative</td>`; debtBody.appendChild(tr); });
+
+    // attach click-to-focus
+    attachFocus('piePaid','Spending by Item'); attachFocus('pieReceived','Received by Item'); attachFocus('balanceLine','Balance vs Time'); attachFocus('paidReceivedLine','Paid vs Received');
+  }
+
+  function attachFocus(canvasId, title){
+    const el = qs('#'+canvasId);
+    if(!el) return;
+    el.onclick = ()=>{
+      const sourceChart = Chart.getChart(el);
+      if(!sourceChart) return;
+      qs('#focusTitle').textContent = title;
+      qs('#focusModal').style.display='flex';
+      const ctx = qs('#focusCanvas'); ctx.width = 900; ctx.height = 500;
+      // clone config
+      const cfg = JSON.parse(JSON.stringify(sourceChart.config));
+      new Chart(ctx, cfg);
+    }
+  }
+  qs('#closeFocus').addEventListener('click', ()=>{ qs('#focusModal').style.display='none'; qs('#focusCanvas').getContext('2d').clearRect(0,0,qs('#focusCanvas').width,qs('#focusCanvas').height); });
+
+  // quick-show toggles
+  qs('#showOnlyReceived').addEventListener('click', ()=>{
+    if(!paidReceivedChart) return; paidReceivedChart.setDatasetVisibility(0,true); paidReceivedChart.setDatasetVisibility(1,false); paidReceivedChart.update();
+  });
+  qs('#showOnlyPaid').addEventListener('click', ()=>{
+    if(!paidReceivedChart) return; paidReceivedChart.setDatasetVisibility(0,false); paidReceivedChart.setDatasetVisibility(1,true); paidReceivedChart.update();
+  });
+  qs('#showBoth').addEventListener('click', ()=>{
+    if(!paidReceivedChart) return; paidReceivedChart.setDatasetVisibility(0,true); paidReceivedChart.setDatasetVisibility(1,true); paidReceivedChart.update();
+  });
+
+  // ---------------- Notifications ----------------
+  function checkThresholds(balance){
+    if(balance < -10000) showNotif('Debt exceeded ₹ 10,000 — urgent!', 'veryred');
+    else if(balance < 10000) showNotif('Low balance — consider saving', 'red');
+    else if(balance > 100000) showNotif('Nice balance — consider investing!', 'green');
+  }
+  function showNotif(msg, type){
+    const n = qs('#notification'); n.style.display='block'; n.textContent = msg;
+    if(type === 'green') { n.className = 'notification notify-green'; }
+    else { n.className = 'notification notify-red'; }
+    clearTimeout(n._t);
+    n._t = setTimeout(()=>{ n.style.display='none'; },6000);
+  }
+  function toast(msg, kind='green'){ showNotif(msg, kind==='green'?'green':'red'); }
+
+  // ---------------- Boot ----------------
+  window.addEventListener('load', ()=>{
+    const cur = getCurrent(); if(cur){ const users = loadUsers(); const u = users[cur]; if(u){ qs('#currentUserInfo').textContent = u.name + ' ('+u.email+')'; showAppFor(cur); }} else {
+      // Pre-fill example user for first-run demo (optional) - commented out
+      // let demo = {name:'Demo', email:'demo@me', phone:'', password:'1234', records:[]}; persistUser(demo); setCurrent(demo.email); showAppFor(demo.email);
+    }
+  });
+
+  // ensure renderAll called on persisted change
+  const basePersistUser = persistUser;
+  persistUser = function(u){ basePersistUser(u); renderAll(); };
+
+  window.addEventListener('keydown', e=>{ if(e.key==='/' && e.ctrlKey){ e.preventDefault(); qs('#dcItem').focus(); } });
+
+  // ---------------- Small safeguard: if no user data exist, create default arrays ----------------
+  // (The chart code expects datasets to exist — functions handle empty arrays gracefully)
+</script>
+</body>
+</html>
