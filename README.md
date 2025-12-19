@@ -65,16 +65,6 @@ npm run typecheck
 
 ---
 
-## Environment variables
-
-Create a `.env` file (or `.env.local`) in the project root for local development and add:
-
-```bash
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-VITE_GROQ_API_KEY=your_groq_api_key
-```
-
 These are used by:
 - `src/lib/supabase.ts` for database/auth
 - `src/lib/groq.ts` and related components for AI chat
