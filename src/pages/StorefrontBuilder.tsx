@@ -313,7 +313,7 @@ export function StorefrontBuilder() {
                       Store Link (Optional)
                     </label>
                     <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-white/50 dark:bg-gray-800/50 border border-pink-200 dark:border-pink-500/30 focus-within:border-pink-400">
-                      <span className="text-sm text-gray-500 dark:text-gray-400">womenpreneur.store/</span>
+                      <span className="text-sm text-gray-500 dark:text-gray-400"></span>
                       <input
                         type="text"
                         value={handle}
