@@ -7,7 +7,7 @@ It includes:
 - **Grants & Finance Toolkit** for tracking loans, grants, and finances
 - **Skill-Up & Mentorship** modules for learning and connecting with mentors
 - **Storefront Builder** to help set up and showcase small businesses
-- **Community & Chat** features powered by Supabase and Groq (AI assistant)
+- **Community & Chat** features powered by Supabase and Voice enabled AI assistant.
 
 ---
 
