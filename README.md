@@ -1,4 +1,4 @@
-## WomenPreneur
+## *WomenPreneur*
 
 WomenPreneur is a web platform built with **React**, **TypeScript**, **Vite**, and **Tailwind CSS** to empower women entrepreneurs with tools, resources, and community support.
 
