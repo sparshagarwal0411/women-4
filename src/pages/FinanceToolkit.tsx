@@ -9,7 +9,6 @@ import {
   CreditCard,
 } from "lucide-react";
 import { useInView } from "../hooks/useInView";
-// removed invalid import 'href' from react-router-dom — not exported and unused
 
 type CalculatorType = "profit" | "loan" | "budget" | "tax" | "monitor";
 

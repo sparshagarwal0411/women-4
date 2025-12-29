@@ -6,9 +6,7 @@ interface FAQItem {
   question: string;
   answer: string;
 }
-// ...existing code...
 export const FAQ_PATH = "/faqs";
-// ...existing code...
 const faqs: FAQItem[] = [
   {
     question: "What is the Women-Centric Micro-Entrepreneurship Toolkit?",
