@@ -21,7 +21,7 @@ export function UserProfile({ darkMode, toggleDarkMode }: UserProfileProps) {
   const teamSize = localStorage.getItem('teamSize') || '';
 
   useEffect(() => {
-    // Redirect to login if not authenticated
+
     if (!localStorage.getItem('username')) {
       navigate('/login');
     }
