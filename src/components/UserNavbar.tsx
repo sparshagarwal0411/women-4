@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Menu, X, Sparkles, Moon, Sun, LogOut, User } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
 interface UserNavbarProps {
   darkMode: boolean;
@@ -8,12 +9,14 @@ interface UserNavbarProps {
 }
 
 export function UserNavbar({ darkMode, toggleDarkMode }: UserNavbarProps) {
+  const { profile, signOut } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const username = localStorage.getItem('username') || 'User';
-  const userRole = localStorage.getItem('userRole') || 'user';
+
+  const username = profile?.full_name || localStorage.getItem('username') || 'User';
+  const userRole = profile?.role || localStorage.getItem('userRole') || 'user';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,9 +27,8 @@ export function UserNavbar({ darkMode, toggleDarkMode }: UserNavbarProps) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('userRole');
-    localStorage.removeItem('username');
+  const handleLogout = async () => {
+    await signOut();
     navigate('/login');
   };
 
@@ -81,17 +83,16 @@ export function UserNavbar({ darkMode, toggleDarkMode }: UserNavbarProps) {
                 <Link
                   key={link.name}
                   to={link.href}
-                  className={`font-small px-2 py-3 rounded-lg transition-all duration-200 ${
-                    isActive
+                  className={`font-small px-2 py-3 rounded-lg transition-all duration-200 ${isActive
                       ? 'text-pink-600 dark:text-pink-300 bg-pink-50 dark:bg-pink-500/10 shadow-sm'
                       : 'text-gray-700 dark:text-gray-200 hover:text-pink-500 dark:hover:text-pink-400 hover:bg-rose-50 dark:hover:bg-gray-800/60'
-                  }`}
+                    }`}
                 >
                   {link.name}
                 </Link>
               );
             })}
-            
+
             {/* Clickable username and userRole */}
             <Link to="/profile" className="flex items-center gap-2 px-3 py-2 rounded-lg bg-pink-50 dark:bg-pink-500/10">
               <User className="w-4 h-4 text-pink-600 dark:text-pink-300" />
@@ -157,7 +158,7 @@ export function UserNavbar({ darkMode, toggleDarkMode }: UserNavbarProps) {
                 </Link>
               );
             })}
-            
+
             {/* Clickable username and userRole */}
             <Link to="/profile" className="flex items-center gap-2 px-3 py-2 rounded-lg bg-pink-50 dark:bg-pink-500/10">
               <User className="w-4 h-4 text-pink-600 dark:text-pink-300" />

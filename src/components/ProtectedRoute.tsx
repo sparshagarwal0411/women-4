@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 import { UserNavbar } from './UserNavbar';
 import { Footer } from './Footer';
 
@@ -10,17 +11,24 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ children, darkMode, toggleDarkMode }: ProtectedRouteProps) {
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Redirect to login if not authenticated
-    if (!localStorage.getItem('username')) {
+    if (!loading && !user) {
       navigate('/login');
     }
-  }, [navigate]);
+  }, [user, loading, navigate]);
 
-  // Don't render if not authenticated
-  if (!localStorage.getItem('username')) {
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-900">
+        <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!user) {
     return null;
   }
 
