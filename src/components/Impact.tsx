@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { Heart, Star } from 'lucide-react';
-import { useInView } from '../hooks/useInView';
+import { motion } from 'framer-motion';
 
 const testimonials = [
   {
@@ -43,10 +43,20 @@ const testimonials = [
 
 function Counter({ end, label, duration = 2000 }: { end: number; label: string; duration?: number }) {
   const [count, setCount] = useState(0);
-  const [ref, isInView] = useInView();
+  const [inView, setInView] = useState(false);
+  const ref = useRef(null);
 
   useEffect(() => {
-    if (!isInView) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) setInView(true);
+    }, { threshold: 0.1 });
+
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!inView) return;
 
     let startTime: number;
     let animationFrame: number;
@@ -54,41 +64,42 @@ function Counter({ end, label, duration = 2000 }: { end: number; label: string; 
     const animate = (currentTime: number) => {
       if (!startTime) startTime = currentTime;
       const progress = Math.min((currentTime - startTime) / duration, 1);
-
       setCount(Math.floor(progress * end));
-
-      if (progress < 1) {
-        animationFrame = requestAnimationFrame(animate);
-      }
+      if (progress < 1) animationFrame = requestAnimationFrame(animate);
     };
 
     animationFrame = requestAnimationFrame(animate);
-
     return () => cancelAnimationFrame(animationFrame);
-  }, [end, duration, isInView]);
+  }, [end, duration, inView]);
 
   return (
-    <div ref={ref} className="text-center">
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: false }}
+      className="text-center"
+    >
       <div className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent mb-2">
         {count.toLocaleString()}+
       </div>
       <div className="text-gray-600 dark:text-gray-300 text-lg">{label}</div>
-    </div>
+    </motion.div>
   );
 }
 
 export function Impact() {
-  const [ref, isInView] = useInView();
   const marqueeItems = useMemo(() => [...testimonials, ...testimonials], []);
 
   return (
-    <section className="py-24 px-6 bg-gradient-to-b from-pink-50/30 via-purple-50/30 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-800">
+    <section className="py-24 px-6 bg-gradient-to-b from-pink-50/30 via-purple-50/30 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-800 overflow-hidden">
       <div className="max-w-7xl mx-auto">
-        <div
-          ref={ref}
-          className={`text-center mb-16 transition-all duration-1000 ${
-            isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-          }`}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false }}
+          transition={{ duration: 1 }}
+          className="text-center mb-16"
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full bg-white/60 dark:bg-gray-800/60 backdrop-blur-md border border-pink-200/50 dark:border-pink-500/30">
             <Heart className="w-4 h-4 text-pink-500 fill-pink-500" />
@@ -100,7 +111,7 @@ export function Impact() {
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
             Join thousands of women entrepreneurs who are transforming their lives and communities
           </p>
-        </div>
+        </motion.div>
 
         <div className="grid md:grid-cols-4 gap-8 mb-20">
           <Counter end={15000} label="Women Entrepreneurs" />
@@ -144,14 +155,13 @@ export function Impact() {
 }
 
 function TestimonialCard({ testimonial }: { testimonial: typeof testimonials[0] }) {
-  const [ref, isInView] = useInView();
-
   return (
-    <div
-      ref={ref}
-      className={`glassmorphism p-8 rounded-3xl transition-all duration-500 hover:scale-105 ${
-        isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-      }`}
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: false }}
+      transition={{ duration: 0.5 }}
+      className="glassmorphism p-8 rounded-3xl transition-all duration-500 hover:scale-105 border border-pink-200/50 dark:border-pink-500/30"
     >
       <div className="flex gap-1 mb-6">
         {[...Array(5)].map((_, i) => (
@@ -172,6 +182,6 @@ function TestimonialCard({ testimonial }: { testimonial: typeof testimonials[0] 
           <div className="text-sm text-gray-600 dark:text-gray-400">{testimonial.role}</div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

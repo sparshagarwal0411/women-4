@@ -1,16 +1,11 @@
 import { ArrowRight, Sparkles } from "lucide-react";
-import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { GET_STARTED_PATH } from "../constants/routes";
+import { motion } from "framer-motion";
 import HeroVisual from "./HeroVisual";
 
 export default function Hero() {
   const navigate = useNavigate();
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-pink-50 via-purple-50 to-white dark:from-gray-900 dark:via-purple-900/20 dark:to-gray-800">
@@ -20,10 +15,11 @@ export default function Hero() {
         <div className="absolute -bottom-1/2 -left-1/2 w-full h-full bg-gradient-to-tr from-purple-200/30 to-pink-200/30 dark:from-purple-900/20 dark:to-pink-900/20 rounded-full blur-3xl animate-pulse delay-1000" />
       </div>
 
-      <div
-        className={`relative z-10 max-w-6xl mx-auto px-6 py-20 text-center transition-all duration-1000 ${
-          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-        }`}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+        className="relative z-10 max-w-6xl mx-auto px-6 py-20 text-center"
       >
         <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full bg-white/60 dark:bg-gray-800/60 backdrop-blur-md border border-pink-200/50 dark:border-pink-500/30 shadow-lg">
           <Sparkles className="w-4 h-4 text-pink-500" />
@@ -32,19 +28,34 @@ export default function Hero() {
           </span>
         </div>
 
-        <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-pink-500 via-purple-500 to-pink-500 bg-clip-text text-transparent leading-tight">
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 1 }}
+          className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-pink-500 via-purple-500 to-pink-500 bg-clip-text text-transparent leading-tight"
+        >
           Women-Centric
           <br />
           Micro-Entrepreneurship
           <br />Toolkit
-        </h1>
+        </motion.h1>
 
-        <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto">
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 1 }}
+          className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto"
+        >
           Your complete platform for learning, mentorship, and digital tools to
           transform your entrepreneurial dreams into reality
-        </p>
+        </motion.p>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 1 }}
+          className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+        >
           <button
             onClick={() => navigate(GET_STARTED_PATH)}
             className="group px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-full font-semibold shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 flex items-center gap-2"
@@ -62,8 +73,8 @@ export default function Hero() {
               New
             </span>
           </button>
-        </div>
-        
+        </motion.div>
+
         <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
           {[
             { number: "10K+", label: "Women Empowered" },
@@ -82,7 +93,7 @@ export default function Hero() {
             </div>
           ))}
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }
