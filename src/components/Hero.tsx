@@ -8,92 +8,106 @@ export default function Hero() {
   const navigate = useNavigate();
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-pink-50 via-purple-50 to-white dark:from-gray-900 dark:via-purple-900/20 dark:to-gray-800">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-slate-50 dark:bg-surface-dark transition-colors duration-500">
       <HeroVisual />
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-1/2 -right-1/2 w-full h-full bg-gradient-to-br from-pink-200/30 to-purple-200/30 dark:from-pink-900/20 dark:to-purple-900/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute -bottom-1/2 -left-1/2 w-full h-full bg-gradient-to-tr from-purple-200/30 to-pink-200/30 dark:from-purple-900/20 dark:to-pink-900/20 rounded-full blur-3xl animate-pulse delay-1000" />
+
+      {/* Premium Background Accents */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-1/4 -right-1/4 w-[50%] h-[50%] bg-primary-200/20 dark:bg-primary-900/10 rounded-full blur-[120px] animate-pulse-slow" />
+        <div className="absolute -bottom-1/4 -left-1/4 w-[50%] h-[50%] bg-accent-500/10 dark:bg-accent-950/10 rounded-full blur-[120px] animate-pulse-slow delay-700" />
       </div>
 
       <motion.div
         initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
         transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
         className="relative z-10 max-w-6xl mx-auto px-6 py-20 text-center"
       >
-        <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full bg-white/60 dark:bg-gray-800/60 backdrop-blur-md border border-pink-200/50 dark:border-pink-500/30 shadow-lg">
-          <Sparkles className="w-4 h-4 text-pink-500" />
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="inline-flex items-center gap-2 px-4 py-2 mb-10 rounded-full glassmorphism-premium border border-primary-200/50 dark:border-primary-500/20 shadow-xl"
+        >
+          <Sparkles className="w-4 h-4 text-primary-500" />
+          <span className="text-xs font-semibold tracking-wider uppercase text-slate-600 dark:text-slate-300">
             Empowering Women Entrepreneurs
           </span>
-        </div>
+        </motion.div>
 
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 1 }}
-          className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-pink-500 via-purple-500 to-pink-500 bg-clip-text text-transparent leading-tight"
+          className="text-6xl md:text-8xl font-display font-bold mb-8 tracking-tight leading-[1.1]"
         >
-          Women-Centric
+          <span className="text-slate-900 dark:text-white">Women-Centric</span>
           <br />
-          Micro-Entrepreneurship
-          <br />Toolkit
+          <span className="text-gradient animate-glow">Micro-Entrepreneurship</span>
+          <br />
+          <span className="text-slate-900 dark:text-white italic font-serif">Toolkit.</span>
         </motion.h1>
 
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 1 }}
-          className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto"
+          className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-14 max-w-2xl mx-auto leading-relaxed"
         >
           Your complete platform for learning, mentorship, and digital tools to
-          transform your entrepreneurial dreams into reality
+          transform your entrepreneurial dreams into reality.
         </motion.p>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6, duration: 1 }}
-          className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+          className="flex flex-col sm:flex-row gap-6 justify-center items-center"
         >
           <button
             onClick={() => navigate(GET_STARTED_PATH)}
-            className="group px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-full font-semibold shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 flex items-center gap-2"
+            className="group relative px-10 py-5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-full font-bold overflow-hidden transition-all duration-300 hover:scale-105 active:scale-95 shadow-2xl"
           >
-            Get Started
-            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            <div className="absolute inset-0 bg-gradient-to-r from-primary-600 to-accent-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <span className="relative flex items-center gap-2">
+              Launch Journey
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </span>
           </button>
 
           <button
             onClick={() => navigate("/about")}
-            className="px-8 py-4 bg-white/80 dark:bg-gray-900/70 backdrop-blur-md border border-pink-200/80 dark:border-pink-500/40 text-gray-800 dark:text-gray-100 rounded-full font-semibold hover:bg-white/90 dark:hover:bg-gray-800/80 hover:scale-105 transition-all duration-300 shadow-lg flex items-center gap-2"
+            className="group px-10 py-5 glassmorphism-premium border border-slate-200 dark:border-white/10 text-slate-800 dark:text-slate-200 rounded-full font-bold hover:bg-slate-100 dark:hover:bg-white/5 transition-all duration-300 flex items-center gap-2"
           >
-            Learn More
-            <span className="inline-flex items-center px-2 py-0.5 text-xs font-semibold rounded-full bg-gradient-to-r from-pink-500/20 to-purple-500/20 text-pink-600 dark:text-pink-300 border border-pink-200/50 dark:border-pink-500/30">
-              New
-            </span>
+            Explore Ecosystem
           </button>
         </motion.div>
 
-        <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+        <div className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-5xl mx-auto">
           {[
-            { number: "10K+", label: "Women Empowered" },
-            { number: "500+", label: "Mentors" },
-            { number: "95%", label: "Success Rate" },
-            { number: "24/7", label: "Support" },
+            { number: "10K+", label: "Impacted" },
+            { number: "500+", label: "Advisors" },
+            { number: "95%", label: "Placement" },
+            { number: "24/7", label: "Concierge" },
           ].map((stat, index) => (
-            <div
+            <motion.div
               key={index}
-              className="glassmorphism p-6 rounded-2xl hover:scale-105 transition-transform duration-300"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.8 + index * 0.1 }}
+              className="relative group p-8 rounded-3xl glassmorphism border border-slate-100 dark:border-white/5 hover:border-primary-500/30 dark:hover:border-primary-500/30 transition-all duration-500"
             >
-              <div className="text-3xl font-bold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent mb-2">
+              <div className="text-4xl font-display font-bold text-slate-900 dark:text-white mb-2 group-hover:text-primary-500 transition-colors">
                 {stat.number}
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-300">{stat.label}</div>
-            </div>
+              <div className="text-xs font-bold tracking-widest uppercase text-slate-500 dark:text-slate-400">{stat.label}</div>
+            </motion.div>
           ))}
         </div>
       </motion.div>
     </section>
   );
 }
+

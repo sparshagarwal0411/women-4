@@ -59,85 +59,86 @@ export function Pricing() {
   const [ref, isInView] = useInView();
 
   return (
-    <section id="pricing" className="py-24 px-6 bg-gradient-to-b from-white via-pink-50/30 to-purple-50/30 dark:from-gray-800 dark:via-gray-900">
-      <div className="max-w-7xl mx-auto">
+    <section id="pricing" className="py-32 px-6 bg-slate-50 dark:bg-surface-dark transition-colors duration-500 overflow-hidden relative">
+      <div className="max-w-7xl mx-auto relative z-10">
         <div
           ref={ref}
-          className={`text-center mb-16 transition-all duration-1000 ${
-            isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-          }`}
+          className={`text-center mb-24 transition-all duration-1000 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+            }`}
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full bg-white/60 dark:bg-gray-800/60 backdrop-blur-md border border-pink-200/50 dark:border-pink-500/30">
-            <Sparkles className="w-4 h-4 text-pink-500" />
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-200">Choose Your Plan</span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full glassmorphism-premium border border-primary-200/50 dark:border-primary-500/20 shadow-lg">
+            <Sparkles className="w-4 h-4 text-primary-500" />
+            <span className="text-xs font-bold tracking-widest uppercase text-slate-600 dark:text-slate-300">Investment Structure</span>
           </div>
-          <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
-            Pricing Plans
+          <h2 className="text-5xl md:text-6xl font-display font-bold mb-8 text-slate-900 dark:text-white">
+            Ecosystem <span className="text-gradient">Access.</span>
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Choose the perfect plan for your entrepreneurial journey. Upgrade anytime with our loyalty program benefits.
+          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
+            Choose the tier that aligns with your professional growth. Each tier is designed to provide maximum value as you scale.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-16">
+        <div className="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto mb-20 relative">
           {plans.map((plan, index) => (
             <motion.div
               key={plan.name}
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5, delay: index * 0.2 }}
-              className={`relative glassmorphism rounded-3xl border-2 p-8 ${
-                plan.popular
-                  ? 'border-pink-500 dark:border-pink-400 shadow-2xl scale-105'
-                  : 'border-pink-200/60 dark:border-pink-500/30'
-              }`}
+              transition={{ duration: 0.8, delay: index * 0.2 }}
+              className={`relative glassmorphism-premium rounded-[3rem] p-12 border-2 transition-all duration-500 group overflow-hidden ${plan.popular
+                  ? 'border-primary-500/50 dark:border-primary-500/30 shadow-2xl scale-105 z-20'
+                  : 'border-slate-100 dark:border-white/5 opacity-80 hover:opacity-100 scale-100 z-10'
+                }`}
             >
               {plan.popular && (
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <span className="px-4 py-1 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-sm font-semibold rounded-full flex items-center gap-1">
+                <div className="absolute -top-1 right-8">
+                  <span className="px-6 py-2 bg-primary-500 text-white text-xs font-bold tracking-[0.2em] uppercase rounded-b-2xl flex items-center gap-2 shadow-lg">
                     <Crown className="w-4 h-4" />
-                    Most Popular
+                    Tier Leader
                   </span>
                 </div>
               )}
 
-              <div className="text-center mb-8">
-                <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              <div className="mb-12">
+                <h3 className="text-3xl font-display font-bold text-slate-900 dark:text-white mb-4 group-hover:text-primary-500 transition-colors">
                   {plan.name}
                 </h3>
-                <div className="flex items-baseline justify-center gap-2 mb-2">
-                  <span className="text-5xl font-bold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
+                <div className="flex items-baseline gap-2 mb-4">
+                  <span className={`text-6xl font-display font-bold ${plan.popular ? 'text-gradient' : 'text-slate-900 dark:text-white'}`}>
                     ₹{plan.price.toLocaleString()}
                   </span>
                   {plan.price > 0 && (
-                    <span className="text-gray-500 dark:text-gray-400">/{plan.period}</span>
+                    <span className="text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest text-xs">/{plan.period}</span>
                   )}
                 </div>
-                <p className="text-gray-600 dark:text-gray-300">{plan.description}</p>
+                <p className="text-slate-600 dark:text-slate-400 font-medium">{plan.description}</p>
               </div>
 
-              <ul className="space-y-4 mb-8">
+              <ul className="space-y-6 mb-12">
                 {plan.features.map((feature, idx) => (
-                  <li key={idx} className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                    <span className="text-gray-700 dark:text-gray-300">{feature}</span>
+                  <li key={idx} className="flex items-start gap-4 group/item">
+                    <div className="w-6 h-6 rounded-full bg-primary-500/10 dark:bg-primary-500/20 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover/item:bg-primary-500 transition-colors">
+                      <Check className="w-4 h-4 text-primary-500 group-hover/item:text-white transition-colors" />
+                    </div>
+                    <span className="text-slate-700 dark:text-slate-300 font-medium">{feature}</span>
                   </li>
                 ))}
                 {plan.notIncluded && plan.notIncluded.map((feature, idx) => (
-                  <li key={idx} className="flex items-start gap-3 opacity-50">
-                    <span className="w-5 h-5 flex-shrink-0 mt-0.5 text-center text-gray-400">✗</span>
-                    <span className="text-gray-500 dark:text-gray-400 line-through">{feature}</span>
+                  <li key={idx} className="flex items-start gap-4 opacity-40 grayscale">
+                    <div className="w-6 h-6 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-slate-400 font-bold text-xs pr-0.5">✕</span>
+                    </div>
+                    <span className="text-slate-500 dark:text-slate-400 line-through font-medium">{feature}</span>
                   </li>
                 ))}
               </ul>
 
               <Link
                 to={plan.buttonLink}
-                className={`block w-full py-4 rounded-xl font-semibold text-center transition-all ${
-                  plan.popular
-                    ? 'bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white shadow-lg hover:scale-105'
-                    : 'bg-white dark:bg-gray-800 border-2 border-pink-200 dark:border-pink-500/30 text-pink-600 dark:text-pink-400 hover:border-pink-400'
-                }`}
+                className={`block w-full py-5 rounded-[2rem] font-bold text-center transition-all duration-300 shadow-xl hover:scale-[1.02] active:scale-95 ${plan.popular
+                    ? 'bg-primary-500 text-white hover:bg-primary-600'
+                    : 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100'
+                  }`}
               >
                 {plan.buttonText}
               </Link>
@@ -147,40 +148,42 @@ export function Pricing() {
 
         {/* Loyalty Program */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="glassmorphism rounded-3xl border border-pink-200/60 dark:border-pink-500/30 p-8 max-w-4xl mx-auto"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={isInView ? { opacity: 1, scale: 1 } : {}}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="glassmorphism-premium rounded-[3rem] border border-slate-100 dark:border-white/5 p-12 max-w-4xl mx-auto relative group overflow-hidden"
         >
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center">
-              <Gift className="w-6 h-6 text-white" />
+          <div className="absolute top-0 left-0 w-32 h-32 bg-yellow-500/10 blur-[60px] rounded-full -ml-16 -mt-16 group-hover:scale-150 transition-transform duration-1000" />
+
+          <div className="flex flex-col md:flex-row items-center gap-10 relative z-10">
+            <div className="w-20 h-20 rounded-[1.5rem] bg-yellow-500 flex items-center justify-center shadow-2xl shrink-0 group-hover:rotate-12 transition-transform duration-500">
+              <Gift className="w-10 h-10 text-white" />
             </div>
-            <div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <div className="flex-1 text-center md:text-left">
+              <h3 className="text-3xl font-display font-bold text-slate-900 dark:text-white mb-2">
                 Loyalty Program
               </h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Get rewarded for staying with us
+              <p className="text-slate-600 dark:text-slate-400 font-medium">
+                Premium rewards for sustained ecosystem contributors and entrepreneurs.
               </p>
             </div>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-2 gap-8 mt-12">
             {loyaltyBenefits.map((benefit, index) => (
-              <div key={index} className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-white text-xs font-bold">{index + 1}</span>
+              <div key={index} className="flex items-center gap-4 group/benefit">
+                <div className="w-8 h-8 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center shrink-0 font-bold text-sm group-hover/benefit:bg-primary-500 group-hover/benefit:text-white transition-all">
+                  0{index + 1}
                 </div>
-                <span className="text-gray-700 dark:text-gray-300">{benefit}</span>
+                <span className="text-slate-700 dark:text-slate-300 font-bold text-sm tracking-wide uppercase">{benefit}</span>
               </div>
             ))}
           </div>
 
-          <div className="mt-6 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-xl border border-yellow-200 dark:border-yellow-500/30">
-            <p className="text-sm text-gray-700 dark:text-gray-300">
-              <strong className="text-yellow-600 dark:text-yellow-400">Special Offer:</strong> Get{' '}
-              <strong className="text-pink-600 dark:text-pink-400">25% off</strong> on your next plan renewal when you upgrade to Pro!
+          <div className="mt-12 p-6 bg-primary-500 rounded-[2rem] border border-primary-400/50 shadow-2xl relative overflow-hidden group/offer">
+            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/offer:opacity-100 transition-opacity" />
+            <p className="text-white text-center font-bold tracking-wide relative z-10">
+              SPECIAL INCENTIVE: GET 25% RENEWAL REBATE ON PRO UPGRADES THIS MONTH.
             </p>
           </div>
         </motion.div>
@@ -188,4 +191,6 @@ export function Pricing() {
     </section>
   );
 }
+
+import { Check, Sparkles, Gift, Crown } from 'lucide-react';
 

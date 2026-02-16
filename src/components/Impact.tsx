@@ -77,13 +77,13 @@ function Counter({ end, label, duration = 2000 }: { end: number; label: string; 
       ref={ref}
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: false }}
-      className="text-center"
+      viewport={{ once: true }}
+      className="text-center group"
     >
-      <div className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent mb-2">
-        {count.toLocaleString()}+
+      <div className="text-5xl md:text-7xl font-display font-bold text-slate-900 dark:text-white mb-3 group-hover:text-primary-500 transition-colors duration-500">
+        {count.toLocaleString()}{end === 95 ? '%' : '+'}
       </div>
-      <div className="text-gray-600 dark:text-gray-300 text-lg">{label}</div>
+      <div className="text-xs font-bold tracking-[0.2em] uppercase text-slate-500 dark:text-slate-400">{label}</div>
     </motion.div>
   );
 }
@@ -92,50 +92,53 @@ export function Impact() {
   const marqueeItems = useMemo(() => [...testimonials, ...testimonials], []);
 
   return (
-    <section className="py-24 px-6 bg-gradient-to-b from-pink-50/30 via-purple-50/30 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-800 overflow-hidden">
-      <div className="max-w-7xl mx-auto">
+    <section className="py-32 px-6 bg-white dark:bg-surface-dark transition-colors duration-500 overflow-hidden relative">
+      {/* Decorative background element */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-primary-500/5 blur-[120px] rounded-full pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false }}
+          viewport={{ once: true }}
           transition={{ duration: 1 }}
-          className="text-center mb-16"
+          className="text-center mb-24"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full bg-white/60 dark:bg-gray-800/60 backdrop-blur-md border border-pink-200/50 dark:border-pink-500/30">
-            <Heart className="w-4 h-4 text-pink-500 fill-pink-500" />
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-200">Community Impact</span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full glassmorphism-premium border border-primary-200/50 dark:border-primary-500/20 shadow-lg">
+            <Heart className="w-4 h-4 text-primary-500 fill-primary-500" />
+            <span className="text-xs font-bold tracking-widest uppercase text-slate-600 dark:text-slate-300">Community Impact</span>
           </div>
-          <h2 className="text-5xl font-bold mb-6 bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
-            Our Growing Community
+          <h2 className="text-5xl md:text-6xl font-display font-bold mb-8 text-slate-900 dark:text-white">
+            Our Growing <span className="text-gradient">Community.</span>
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Join thousands of women entrepreneurs who are transforming their lives and communities
+          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
+            Join thousands of women entrepreneurs who are transforming their lives and communities through our ecosystem.
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-4 gap-8 mb-20">
-          <Counter end={15000} label="Women Entrepreneurs" />
-          <Counter end={750} label="Expert Mentors" />
-          <Counter end={2500} label="Businesses Launched" />
-          <Counter end={95} label="Satisfaction Rate" duration={1500} />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-12 mb-32">
+          <Counter end={15000} label="Impacted" />
+          <Counter end={750} label="Advisors" />
+          <Counter end={2500} label="Ventures" />
+          <Counter end={95} label="NPS Score" duration={1500} />
         </div>
 
         <div className="relative w-full -mx-6 sm:-mx-1 overflow-hidden">
           <div
-            className="flex gap-10 animate-testimonial-marquee will-change-transform py-3 px-2"
+            className="flex gap-10 animate-testimonial-marquee will-change-transform py-6 px-2"
             style={{ width: 'max-content' }}
           >
             {marqueeItems.map((testimonial, index) => (
               <div
                 key={index}
-                className="min-w-[320px] sm:min-w-[400px] lg:min-w-[460px] shrink-0"
+                className="min-w-[340px] sm:min-w-[420px] lg:min-w-[480px] shrink-0"
               >
                 <TestimonialCard testimonial={testimonial} />
               </div>
             ))}
           </div>
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-24 sm:w-32 bg-gradient-to-r from-pink-50 via-pink-50/80 to-transparent dark:from-gray-900 dark:via-gray-900/80"></div>
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-24 sm:w-32 bg-gradient-to-l from-pink-50 via-pink-50/80 to-transparent dark:from-gray-900 dark:via-gray-900/80"></div>
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-white via-white/80 to-transparent dark:from-surface-dark dark:via-surface-dark/80"></div>
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-white via-white/80 to-transparent dark:from-surface-dark dark:via-surface-dark/80"></div>
         </div>
       </div>
       <style>{`
@@ -144,10 +147,10 @@ export function Impact() {
           100% { transform: translateX(-50%); }
         }
         .animate-testimonial-marquee {
-          animation: testimonial-marquee 36s linear infinite;
+          animation: testimonial-marquee 40s linear infinite;
         }
-        @media (max-width: 768px) {
-          .animate-testimonial-marquee { animation-duration: 30s; }
+        .animate-testimonial-marquee:hover {
+          animation-play-state: paused;
         }
       `}</style>
     </section>
@@ -159,27 +162,32 @@ function TestimonialCard({ testimonial }: { testimonial: typeof testimonials[0] 
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       whileInView={{ opacity: 1, scale: 1 }}
-      viewport={{ once: false }}
+      viewport={{ once: true }}
       transition={{ duration: 0.5 }}
-      className="glassmorphism p-8 rounded-3xl transition-all duration-500 hover:scale-105 border border-pink-200/50 dark:border-pink-500/30"
+      className="glassmorphism-premium p-10 rounded-[2.5rem] transition-all duration-500 hover:scale-[1.02] border border-slate-100 dark:border-white/5 group"
     >
-      <div className="flex gap-1 mb-6">
+      <div className="flex gap-1 mb-8 opacity-50 group-hover:opacity-100 transition-opacity">
         {[...Array(5)].map((_, i) => (
-          <Star key={i} className="w-5 h-5 text-yellow-400 fill-yellow-400" />
+          <Star key={i} className="w-4 h-4 text-primary-500 fill-primary-500" />
         ))}
       </div>
-      <p className="text-gray-700 dark:text-gray-300 mb-6 italic leading-relaxed">
+      <p className="text-slate-700 dark:text-slate-300 mb-10 text-lg leading-relaxed font-medium">
         "{testimonial.quote}"
       </p>
-      <div className="flex items-center gap-4">
-        <img
-          src={testimonial.image}
-          alt={testimonial.name}
-          className="w-14 h-14 rounded-full object-cover ring-4 ring-pink-200 dark:ring-pink-500/30"
-        />
+      <div className="flex items-center gap-5">
+        <div className="relative">
+          <img
+            src={testimonial.image}
+            alt={testimonial.name}
+            className="w-16 h-16 rounded-2xl object-cover grayscale group-hover:grayscale-0 transition-all duration-500 shadow-xl"
+          />
+          <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-primary-500 rounded-lg flex items-center justify-center border-2 border-white dark:border-surface-dark">
+            <Heart className="w-3 h-3 text-white fill-white" />
+          </div>
+        </div>
         <div>
-          <div className="font-bold text-gray-800 dark:text-white">{testimonial.name}</div>
-          <div className="text-sm text-gray-600 dark:text-gray-400">{testimonial.role}</div>
+          <div className="font-display font-bold text-slate-900 dark:text-white text-lg">{testimonial.name}</div>
+          <div className="text-sm font-semibold text-primary-500 tracking-wide uppercase">{testimonial.role}</div>
         </div>
       </div>
     </motion.div>
