@@ -125,7 +125,7 @@ function App() {
           <Route path="/" element={
             <>
               <Navigation darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
-              <Home />
+              <Home darkMode={darkMode} />
               <Footer />
               <StickyButtons />
             </>

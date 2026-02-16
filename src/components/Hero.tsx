@@ -4,12 +4,16 @@ import { GET_STARTED_PATH } from "../constants/routes";
 import { motion } from "framer-motion";
 import HeroVisual from "./HeroVisual";
 
-export default function Hero() {
+interface HeroProps {
+  darkMode: boolean;
+}
+
+export default function Hero({ darkMode }: HeroProps) {
   const navigate = useNavigate();
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-slate-50 dark:bg-surface-dark transition-colors duration-500">
-      <HeroVisual />
+      <HeroVisual darkMode={darkMode} />
 
       {/* Premium Background Accents */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">

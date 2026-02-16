@@ -13,7 +13,11 @@ const wins = [
   { label: "Women Empowered", value: "25K+" },
 ];
 
-export function Home() {
+interface HomeProps {
+  darkMode: boolean;
+}
+
+export function Home({ darkMode }: HomeProps) {
   useEffect(() => {
     if (window.location.hash === '#pricing') {
       setTimeout(() => {
@@ -27,7 +31,7 @@ export function Home() {
 
   return (
     <>
-      <Hero />
+      <Hero darkMode={darkMode} />
       <section className="px-6 -mt-16 md:-mt-24 relative z-20">
         <div className="max-w-6xl mx-auto glassmorphism-premium rounded-[2.5rem] border border-slate-100 dark:border-white/5 shadow-2xl overflow-hidden">
           <div className="bg-slate-900 dark:bg-white px-8 py-4 flex items-center gap-3 text-xs font-bold tracking-widest uppercase text-white dark:text-slate-900 transition-colors">
