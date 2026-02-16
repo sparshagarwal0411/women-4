@@ -2,7 +2,7 @@ import { ArrowRight, Sparkles } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { GET_STARTED_PATH } from "../constants/routes";
-import Snowfall from "react-snowfall";
+import HeroVisual from "./HeroVisual";
 
 export default function Hero() {
   const navigate = useNavigate();
@@ -14,8 +14,7 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-pink-50 via-purple-50 to-white dark:from-gray-900 dark:via-purple-900/20 dark:to-gray-800">
-      <Snowfall color='#7F00FF' />
-      <Snowfall color='#FF69B4' />
+      <HeroVisual />
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-1/2 -right-1/2 w-full h-full bg-gradient-to-br from-pink-200/30 to-purple-200/30 dark:from-pink-900/20 dark:to-purple-900/20 rounded-full blur-3xl animate-pulse" />
         <div className="absolute -bottom-1/2 -left-1/2 w-full h-full bg-gradient-to-tr from-purple-200/30 to-pink-200/30 dark:from-purple-900/20 dark:to-pink-900/20 rounded-full blur-3xl animate-pulse delay-1000" />
