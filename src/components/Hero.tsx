@@ -44,14 +44,12 @@ export default function Hero({ darkMode }: HeroProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 1 }}
-          className="text-6xl md:text-8xl font-display font-bold mb-8 tracking-tight leading-[1.1]"
+          className="text-7xl md:text-9xl font-display font-bold mb-8 tracking-tighter leading-[1.1]"
         >
-          <span className="text-slate-900 dark:text-white">Women-Centric</span>
-          <br />
-          <span className="text-gradient animate-glow">Micro-Entrepreneurship</span>
-          <br />
-          <span className="text-slate-900 dark:text-white italic font-serif">Toolkit.</span>
+          <span className="text-slate-900 dark:text-white">Women</span>
+          <span className="bg-gradient-to-r from-rose-400 via-purple-500 to-indigo-600 bg-clip-text text-transparent animate-glow">Preneur</span>
         </motion.h1>
+
 
         <motion.p
           initial={{ opacity: 0, y: 20 }}
