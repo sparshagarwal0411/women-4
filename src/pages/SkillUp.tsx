@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Clock, Users, Award, DollarSign, CheckCircle, Star, PlayCircle, Lock } from 'lucide-react';
+import { BookOpen, Clock, Users, Award, CheckCircle, Star, PlayCircle, Lock, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useInView } from '../hooks/useInView';
+import { useAuth } from '../hooks/useAuth';
 
 interface Course {
   id: string;
@@ -185,12 +186,10 @@ function CourseCard({ course, index }: { course: Course; index: number }) {
       setEnrolled(true);
       alert(`Successfully ${enrolled ? 'already enrolled' : 'enrolled'} in "${course.title}"!`);
     } else if (isPro && !freePaidCourseUsed) {
-      // Pro users get one free paid course
       setEnrolled(true);
       localStorage.setItem('freePaidCourseUsed', 'true');
       alert(`Successfully enrolled in "${course.title}"!\n\nThis is your free paid course included with Pro subscription.`);
     } else if (isPro) {
-      // Pro users can access all paid courses
       setEnrolled(true);
       alert(`Successfully enrolled in "${course.title}"!\n\nAs a Pro member, you have access to all paid courses!`);
     } else {
@@ -226,11 +225,10 @@ function CourseCard({ course, index }: { course: Course; index: number }) {
           )}
         </div>
         <div className="absolute top-4 left-4">
-          <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
-            course.level === 'Beginner' ? 'bg-blue-500/90 text-white' :
+          <span className={`px-3 py-1 text-xs font-semibold rounded-full ${course.level === 'Beginner' ? 'bg-blue-500/90 text-white' :
             course.level === 'Intermediate' ? 'bg-yellow-500/90 text-white' :
-            'bg-red-500/90 text-white'
-          }`}>
+              'bg-red-500/90 text-white'
+            }`}>
             {course.level}
           </span>
         </div>
@@ -285,15 +283,14 @@ function CourseCard({ course, index }: { course: Course; index: number }) {
 
         <button
           onClick={handleEnroll}
-          className={`w-full mt-4 py-3 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${
-            enrolled
-              ? 'bg-green-500 hover:bg-green-600 text-white'
-              : course.isFree
+          className={`w-full mt-4 py-3 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${enrolled
+            ? 'bg-green-500 hover:bg-green-600 text-white'
+            : course.isFree
               ? 'bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white'
               : isPro
-              ? 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white'
-              : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300'
-          }`}
+                ? 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white'
+                : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300'
+            }`}
         >
           {enrolled ? (
             <>
@@ -328,16 +325,24 @@ export function SkillUp() {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [selectedLevel, setSelectedLevel] = useState<string>('All');
   const [showFreeOnly, setShowFreeOnly] = useState(false);
+  const { profile } = useAuth();
 
   useEffect(() => {
-    // Only allow users to access Skill Up
     const userRole = localStorage.getItem('userRole');
-    if (!localStorage.getItem('username')) {
-      navigate('/login');
-    } else if (userRole !== 'user') {
+    if (userRole && userRole !== 'user') {
       navigate('/profile');
     }
   }, [navigate]);
+
+  const subscription = localStorage.getItem('subscription') || 'free';
+  const isPro = subscription === 'pro';
+
+  const recommendedCourseId = profile?.business_about
+    ? courses.find(c =>
+      c.category.toLowerCase().includes(profile.business_about!.toLowerCase().split(' ')[0]) ||
+      c.description.toLowerCase().includes(profile.business_about!.toLowerCase().split(' ')[0])
+    )?.id
+    : null;
 
   const categories = ['All', ...Array.from(new Set(courses.map(c => c.category)))];
   const levels = ['All', 'Beginner', 'Intermediate', 'Advanced'];
@@ -349,15 +354,27 @@ export function SkillUp() {
     return matchesCategory && matchesLevel && matchesFree;
   });
 
+  const handleEnroll = (courseId: string, isFree: boolean) => {
+    if (!isFree && !isPro) {
+      navigate('/#pricing');
+      return;
+    }
+
+    const enrolled = JSON.parse(localStorage.getItem('enrolledCourses') || '[]');
+    if (!enrolled.includes(courseId)) {
+      localStorage.setItem('enrolledCourses', JSON.stringify([...enrolled, courseId]));
+      alert('Successfully enrolled in course!');
+      navigate('/profile');
+    }
+  };
+
   return (
     <div className="min-h-screen pt-24 pb-16 px-6 bg-gradient-to-br from-white via-pink-50/30 to-purple-50/30 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div
           ref={ref}
-          className={`text-center mb-12 transition-all duration-1000 ${
-            isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-          }`}
+          className={`text-center mb-12 transition-all duration-1000 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+            }`}
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full bg-white/60 dark:bg-gray-800/60 backdrop-blur-md border border-pink-200/50 dark:border-pink-500/30">
             <BookOpen className="w-4 h-4 text-pink-500" />
@@ -369,19 +386,60 @@ export function SkillUp() {
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-6">
             Enhance your entrepreneurial skills with our curated courses. Learn from industry experts and get certified.
           </p>
-          
-          {/* Info Box */}
-          {/* <div className="max-w-2xl mx-auto glassmorphism rounded-xl border border-pink-200/60 dark:border-pink-500/30 p-4 mb-8">
-            <p className="text-sm text-gray-600 dark:text-gray-300">
-              <strong className="text-pink-500">Fake Login Credentials:</strong> Username: <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">demo_user</code> | Password: <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">demo123</code>
-            </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-              Use these credentials to access paid courses. All courses are for demonstration purposes.
-            </p>
-          </div> */}
         </div>
 
-        {/* Filters */}
+        {recommendedCourseId && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-12 p-1 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 rounded-[2rem] shadow-xl"
+          >
+            <div className="bg-white dark:bg-gray-900 rounded-[1.9rem] p-8 md:p-10 flex flex-col md:flex-row gap-8 items-center">
+              <div className="flex-1">
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary-500 text-white text-xs font-bold rounded-full mb-4">
+                  <Star className="w-3 h-3 fill-current" />
+                  RECOMMENDED FOR YOUR {profile?.business_about?.toUpperCase() || 'VENTURE'}
+                </div>
+                {courses.filter(c => c.id === recommendedCourseId).map(course => (
+                  <div key={course.id}>
+                    <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">{course.title}</h2>
+                    <p className="text-lg text-slate-600 dark:text-gray-400 mb-6 leading-relaxed">{course.description}</p>
+                    <div className="flex flex-wrap gap-6 mb-8">
+                      <div className="flex items-center gap-2 text-slate-500 dark:text-gray-400">
+                        <Clock className="w-5 h-5" />
+                        {course.duration}
+                      </div>
+                      <div className="flex items-center gap-2 text-slate-500 dark:text-gray-400">
+                        <Users className="w-5 h-5" />
+                        {course.enrolled.toLocaleString()} enrolled
+                      </div>
+                      <div className="flex items-center gap-2 text-slate-500 dark:text-gray-400">
+                        <Star className="w-5 h-5 text-yellow-500 fill-current" />
+                        {course.rating} / 5.0
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => handleEnroll(course.id, course.isFree)}
+                      className="px-8 py-4 bg-primary-500 hover:bg-primary-600 text-white font-bold rounded-2xl shadow-lg hover:shadow-primary-500/25 transition-all flex items-center gap-2 group"
+                    >
+                      <PlayCircle className="w-5 h-5" />
+                      Enroll Now
+                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <div className="w-full md:w-72 aspect-video md:aspect-square rounded-2xl overflow-hidden shadow-2xl">
+                <img
+                  src={courses.find(c => c.id === recommendedCourseId)?.image}
+                  alt="Recommended course"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         <div className="flex flex-wrap gap-4 mb-8 justify-center">
           <select
             value={selectedCategory}
@@ -414,7 +472,6 @@ export function SkillUp() {
           </label>
         </div>
 
-        {/* Courses Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredCourses.map((course, index) => (
             <CourseCard key={course.id} course={course} index={index} />
@@ -430,4 +487,3 @@ export function SkillUp() {
     </div>
   );
 }
-

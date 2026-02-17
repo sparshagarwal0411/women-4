@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { UserNavbar } from './UserNavbar';
 import { Footer } from './Footer';
+import { AIAssistant } from './AIAssistant';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -37,6 +38,7 @@ export function ProtectedRoute({ children, darkMode, toggleDarkMode }: Protected
       <UserNavbar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
       {children}
       <Footer />
+      <AIAssistant />
     </div>
   );
 }

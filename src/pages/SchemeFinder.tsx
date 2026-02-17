@@ -32,11 +32,18 @@ export function SchemeFinder() {
   useEffect(() => {
     if (profile?.business_about) {
       const focus = profile.business_about.toLowerCase();
+
+      // Find category match
       const matchedCategory = categories.find(cat =>
         cat !== 'All' && (focus.includes(cat.toLowerCase()) || focus.includes(cat.toLowerCase().split(' & ')[0]))
       );
       if (matchedCategory) {
         setSelectedCategory(matchedCategory);
+      }
+
+      // If no search term, use focus as default search to refine results
+      if (!searchTerm) {
+        setSearchTerm(profile.business_about);
       }
     }
   }, [profile]);
