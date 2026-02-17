@@ -411,7 +411,7 @@ export function SkillUp() {
                       </div>
                       <div className="flex items-center gap-2 text-slate-500 dark:text-gray-400">
                         <Users className="w-5 h-5" />
-                        {course.enrolled.toLocaleString()} enrolled
+                        {course.students?.toLocaleString() || '0'} enrolled
                       </div>
                       <div className="flex items-center gap-2 text-slate-500 dark:text-gray-400">
                         <Star className="w-5 h-5 text-yellow-500 fill-current" />
