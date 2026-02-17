@@ -25,8 +25,8 @@ import CompleteProfile from './pages/CompleteProfile';
 import { AuthCallback } from './pages/AuthCallback';
 import { useAuth } from './hooks/useAuth';
 import { UserNavbar } from './components/UserNavbar';
-
 import { AIAssistant } from './components/AIAssistant';
+import ScrollToTop from './components/ScrollToTop';
 
 function HomeWrapper({ darkMode, toggleDarkMode }: { darkMode: boolean; toggleDarkMode: () => void }) {
   const { user, loading } = useAuth();
@@ -67,6 +67,7 @@ function App() {
 
   return (
     <Router>
+      <ScrollToTop />
       <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
         <Routes>
           <Route path="/login" element={

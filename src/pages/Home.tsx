@@ -49,7 +49,7 @@ export function Home({ darkMode }: HomeProps) {
               Welcome back, {profile?.full_name?.split(' ')[0] || 'Entrepreneur'}!
             </motion.h1>
             <p className="text-slate-600 dark:text-gray-400">
-              Here's what we've curated for your {profile?.business_about || 'venture'} today.
+              Here's what we've curated for your {profile?.business_about || 'business'} today.
             </p>
           </div>
 
