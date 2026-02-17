@@ -29,12 +29,16 @@ export function UserProfile() {
   }, [profile, loading, navigate]);
 
   // Dynamic stats calculation
-  const enrolledCourses = JSON.parse(localStorage.getItem('enrolledCourses') || '[]');
-  const schemesApplied = JSON.parse(localStorage.getItem('appliedSchemes') || '[]');
+  const enrolledCourses = Array.isArray(JSON.parse(localStorage.getItem('enrolledCourses') || '[]'))
+    ? JSON.parse(localStorage.getItem('enrolledCourses') || '[]')
+    : [];
+  const schemesApplied = Array.isArray(JSON.parse(localStorage.getItem('appliedSchemes') || '[]'))
+    ? JSON.parse(localStorage.getItem('appliedSchemes') || '[]')
+    : [];
 
   const stats = [
-    { icon: TrendingUp, label: 'Schemes Applied', value: schemesApplied.length.toString() },
-    { icon: Award, label: 'Courses Enrolled', value: enrolledCourses.length.toString() },
+    { icon: TrendingUp, label: 'Schemes Applied', value: (schemesApplied?.length || 0).toString() },
+    { icon: Award, label: 'Courses Enrolled', value: (enrolledCourses?.length || 0).toString() },
     {
       icon: Clock,
       label: 'Local Time',

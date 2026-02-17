@@ -1,8 +1,9 @@
-import { useState, FormEvent } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Navigation } from "../components/Navigation";
 import { supabase } from "../lib/supabase";
+import { useAuth } from "../hooks/useAuth";
 import { Lock, Mail, User, Users, ChevronRight, Sparkles } from "lucide-react";
 
 interface LoginProps {
@@ -18,6 +19,13 @@ export default function Login({ darkMode, toggleDarkMode }: LoginProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth();
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      navigate("/");
+    }
+  }, [user, authLoading, navigate]);
 
   const isLogin = mode === "login";
 

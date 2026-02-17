@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Menu, X, Sparkles, Moon, Sun } from 'lucide-react';
+import { Menu, X, Sparkles, Moon, Sun, LogOut, Layout } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
 interface NavigationProps {
   darkMode: boolean;
@@ -8,6 +9,7 @@ interface NavigationProps {
 }
 
 export function Navigation({ darkMode, toggleDarkMode }: NavigationProps) {
+  const { user, signOut } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
@@ -60,15 +62,20 @@ export function Navigation({ darkMode, toggleDarkMode }: NavigationProps) {
     }
   };
 
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/login');
+  };
+
   return (
     <nav className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${isScrolled
-        ? 'py-4'
-        : 'py-6'
+      ? 'py-4'
+      : 'py-6'
       }`}>
       <div className="max-w-7xl mx-auto px-6">
         <div className={`transition-all duration-500 rounded-[2rem] px-6 py-2 ${isScrolled
-            ? 'glassmorphism-premium dark:bg-slate-900/60 shadow-2xl border border-slate-100 dark:border-white/5'
-            : 'bg-transparent'
+          ? 'glassmorphism-premium dark:bg-slate-900/60 shadow-2xl border border-slate-100 dark:border-white/5'
+          : 'bg-transparent'
           }`}>
           <div className="flex items-center justify-between h-12">
             <Link to="/" className="flex items-center gap-3 cursor-pointer group">
@@ -87,8 +94,8 @@ export function Navigation({ darkMode, toggleDarkMode }: NavigationProps) {
                   to={link.href}
                   onClick={(e) => handleNavClick(e, link)}
                   className={`text-sm font-bold tracking-widest uppercase transition-all duration-300 ${location.pathname === link.href || (link.isAnchor && location.pathname === '/' && window.location.hash === '#pricing')
-                      ? 'text-primary-500'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-primary-500 dark:hover:text-white'
+                    ? 'text-primary-500'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-primary-500 dark:hover:text-white'
                     }`}
                 >
                   {link.name}
@@ -106,12 +113,32 @@ export function Navigation({ darkMode, toggleDarkMode }: NavigationProps) {
                   <Moon className="w-5 h-5 text-slate-600" />
                 )}
               </button>
-              <Link
-                to="/login"
-                className="px-6 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-full text-sm font-bold shadow-xl hover:scale-105 active:scale-95 transition-all"
-              >
-                Launch App
-              </Link>
+
+              {user ? (
+                <div className="flex items-center gap-4">
+                  <Link
+                    to="/profile"
+                    className="flex items-center gap-2 px-5 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-full text-sm font-bold shadow-xl hover:scale-105 active:scale-95 transition-all"
+                  >
+                    <Layout className="w-4 h-4" />
+                    Dashboard
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-all group"
+                    title="Logout"
+                  >
+                    <LogOut className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  to="/login"
+                  className="px-6 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-full text-sm font-bold shadow-xl hover:scale-105 active:scale-95 transition-all"
+                >
+                  Launch App
+                </Link>
+              )}
             </div>
 
             <div className="flex md:hidden items-center gap-4">
@@ -142,20 +169,43 @@ export function Navigation({ darkMode, toggleDarkMode }: NavigationProps) {
                   setIsOpen(false);
                 }}
                 className={`block text-lg font-bold tracking-wider uppercase transition-colors ${location.pathname === link.href || (link.isAnchor && location.pathname === '/' && window.location.hash === '#pricing')
-                    ? 'text-primary-500'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-primary-500'
+                  ? 'text-primary-500'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-primary-500'
                   }`}
               >
                 {link.name}
               </Link>
             ))}
-            <Link
-              to="/login"
-              className="w-full px-8 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-bold shadow-xl text-center block"
-              onClick={() => setIsOpen(false)}
-            >
-              Launch App
-            </Link>
+            {user ? (
+              <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-white/10">
+                <Link
+                  to="/profile"
+                  className="w-full px-8 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-bold shadow-xl text-center block flex items-center justify-center gap-2"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <Layout className="w-5 h-5" />
+                  App Dashboard
+                </Link>
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setIsOpen(false);
+                  }}
+                  className="w-full px-8 py-4 bg-red-500 text-white rounded-2xl font-bold shadow-xl text-center block flex items-center justify-center gap-2"
+                >
+                  <LogOut className="w-5 h-5" />
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <Link
+                to="/login"
+                className="w-full px-8 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-bold shadow-xl text-center block"
+                onClick={() => setIsOpen(false)}
+              >
+                Launch App
+              </Link>
+            )}
           </div>
         )}
       </div>

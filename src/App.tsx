@@ -28,18 +28,29 @@ import { UserNavbar } from './components/UserNavbar';
 import { AIAssistant } from './components/AIAssistant';
 import ScrollToTop from './components/ScrollToTop';
 
-function HomeWrapper({ darkMode, toggleDarkMode }: { darkMode: boolean; toggleDarkMode: () => void }) {
+function Navbar({ darkMode, toggleDarkMode }: { darkMode: boolean; toggleDarkMode: () => void }) {
+  const { user, loading } = useAuth();
+  if (loading) return null;
+  return user ? (
+    <UserNavbar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+  ) : (
+    <Navigation darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+  );
+}
+
+function HomeWrapper({ darkMode }: { darkMode: boolean }) {
   const { user, loading } = useAuth();
 
-  if (loading) return null;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-900">
+        <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <>
-      {user ? (
-        <UserNavbar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
-      ) : (
-        <Navigation darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
-      )}
       <Home darkMode={darkMode} />
       <Footer />
       {user && <AIAssistant />}
@@ -60,15 +71,17 @@ function App() {
   }, []);
 
   const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
+    const newMode = !darkMode;
+    setDarkMode(newMode);
     document.documentElement.classList.toggle('dark');
-    localStorage.setItem('darkMode', (!darkMode).toString());
+    localStorage.setItem('darkMode', newMode.toString());
   };
 
   return (
     <Router>
       <ScrollToTop />
       <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
+        <Navbar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
         <Routes>
           <Route path="/login" element={
             <>
@@ -133,7 +146,6 @@ function App() {
               <MentorMentorship />
             </ProtectedRoute>
           } />
-
           <Route path="/finance" element={
             <ProtectedRoute darkMode={darkMode} toggleDarkMode={toggleDarkMode}>
               <FinanceToolkit />
@@ -145,11 +157,10 @@ function App() {
             </ProtectedRoute>
           } />
           <Route path="/" element={
-            <HomeWrapper darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+            <HomeWrapper darkMode={darkMode} />
           } />
           <Route path="/faqs" element={
             <>
-              <Navigation darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
               <FAQs />
               <Footer />
               <StickyButtons />
@@ -157,7 +168,6 @@ function App() {
           } />
           <Route path="/loan-monitor" element={
             <>
-              <Navigation darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
               <MoneyMap />
               <Footer />
               <StickyButtons />
@@ -165,7 +175,6 @@ function App() {
           } />
           <Route path="/about" element={
             <>
-              <Navigation darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
               <About />
               <Footer />
               <StickyButtons />

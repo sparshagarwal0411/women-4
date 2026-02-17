@@ -1,8 +1,17 @@
-import { useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase, Profile } from '../lib/supabase';
 import { User } from '@supabase/supabase-js';
 
-export function useAuth() {
+interface AuthContextType {
+    user: User | null;
+    profile: Profile | null;
+    loading: boolean;
+    signOut: () => Promise<void>;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [profile, setProfile] = useState<Profile | null>(null);
     const [loading, setLoading] = useState(true);
@@ -31,7 +40,8 @@ export function useAuth() {
 
         const initializeAuth = async () => {
             try {
-                const { data: { session } } = await supabase.auth.getSession();
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                if (sessionError) throw sessionError;
 
                 if (!mounted) return;
 
@@ -57,8 +67,7 @@ export function useAuth() {
 
             if (session?.user) {
                 setUser(session.user);
-                // Re-fetch profile on sign in or significant changes
-                if (event === 'SIGNED_IN' || event === 'USER_UPDATED' || !profile) {
+                if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
                     const profileData = await fetchProfile(session.user.id);
                     if (mounted) setProfile(profileData);
                 }
@@ -76,14 +85,27 @@ export function useAuth() {
     }, []);
 
     const signOut = async () => {
-        await supabase.auth.signOut();
-        localStorage.clear();
+        try {
+            await supabase.auth.signOut();
+            localStorage.clear();
+            setUser(null);
+            setProfile(null);
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
     };
 
-    return {
-        user,
-        profile,
-        loading,
-        signOut,
-    };
+    return React.createElement(
+        AuthContext.Provider,
+        { value: { user, profile, loading, signOut } },
+        children
+    );
+}
+
+export function useAuth() {
+    const context = useContext(AuthContext);
+    if (context === undefined) {
+        throw new Error('useAuth must be used within an AuthProvider');
+    }
+    return context;
 }
