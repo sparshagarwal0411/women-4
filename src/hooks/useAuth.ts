@@ -52,8 +52,14 @@ export function useAuth() {
     };
 
     const signOut = async () => {
-        await supabase.auth.signOut();
-        localStorage.clear(); // Clear legacy data too
+        try {
+            await supabase.auth.signOut();
+            localStorage.clear(); // Clear legacy data too
+            setUser(null);
+            setProfile(null);
+        } catch (error) {
+            console.error('Error signing out:', error);
+        }
     };
 
     return {
