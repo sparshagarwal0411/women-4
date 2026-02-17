@@ -86,10 +86,10 @@ export function MentorMentorship() {
         id: msg.id,
         sender: msg.sender_name,
         content: msg.content,
-        timestamp: new Date(msg.created_at).toLocaleTimeString('en-US', {
+        timestamp: msg.created_at ? new Date(msg.created_at).toLocaleTimeString('en-US', {
           hour: '2-digit',
           minute: '2-digit'
-        }),
+        }) : 'Recent',
         is_own: msg.is_own
       })));
     }
@@ -180,9 +180,8 @@ export function MentorMentorship() {
       <div className="max-w-7xl mx-auto">
         <div
           ref={ref}
-          className={`text-center mb-12 transition-all duration-1000 ${
-            isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-          }`}
+          className={`text-center mb-12 transition-all duration-1000 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+            }`}
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full bg-white/60 dark:bg-gray-800/60 backdrop-blur-md border border-pink-200/50 dark:border-pink-500/30">
             <Users className="w-4 h-4 text-pink-500" />
@@ -206,11 +205,10 @@ export function MentorMentorship() {
               <button
                 key={area}
                 onClick={() => setSelectedFocus(selectedFocus === area ? null : area)}
-                className={`px-3 py-1.5 rounded-full text-sm border transition ${
-                  selectedFocus === area
+                className={`px-3 py-1.5 rounded-full text-sm border transition ${selectedFocus === area
                     ? 'bg-pink-100 dark:bg-pink-500/10 border-pink-400 text-pink-700 dark:text-pink-200'
                     : 'bg-white/70 dark:bg-gray-800/70 border-pink-200/60 dark:border-pink-500/30 text-gray-700 dark:text-gray-200 hover:border-pink-400'
-                }`}
+                  }`}
               >
                 {area}
               </button>
@@ -238,9 +236,8 @@ export function MentorMentorship() {
                 <div
                   key={mentor.id}
                   onClick={() => setSelectedMentor(mentor)}
-                  className={`p-4 border-b border-pink-200 dark:border-pink-500/30 cursor-pointer transition-all hover:bg-pink-50 dark:hover:bg-gray-800/50 ${
-                    selectedMentor?.id === mentor.id ? 'bg-pink-50 dark:bg-gray-800/50' : ''
-                  }`}
+                  className={`p-4 border-b border-pink-200 dark:border-pink-500/30 cursor-pointer transition-all hover:bg-pink-50 dark:hover:bg-gray-800/50 ${selectedMentor?.id === mentor.id ? 'bg-pink-50 dark:bg-gray-800/50' : ''
+                    }`}
                 >
                   <div className="flex items-center gap-3">
                     <div className="relative">
@@ -302,15 +299,13 @@ export function MentorMentorship() {
                         key={message.id}
                         className={`flex ${message.is_own ? 'justify-end' : 'justify-start'}`}
                       >
-                        <div className={`max-w-xs lg:max-w-md ${
-                          message.is_own
+                        <div className={`max-w-xs lg:max-w-md ${message.is_own
                             ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white'
                             : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-white'
-                        } rounded-2xl px-4 py-3 shadow-md`}>
+                          } rounded-2xl px-4 py-3 shadow-md`}>
                           <p className="text-sm mb-1">{message.content}</p>
-                          <p className={`text-xs ${
-                            message.is_own ? 'text-pink-100' : 'text-gray-500 dark:text-gray-400'
-                          }`}>
+                          <p className={`text-xs ${message.is_own ? 'text-pink-100' : 'text-gray-500 dark:text-gray-400'
+                            }`}>
                             {message.timestamp}
                           </p>
                         </div>

@@ -86,8 +86,8 @@ export function Pricing() {
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.8, delay: index * 0.2 }}
               className={`relative glassmorphism-premium rounded-[3rem] p-12 border-2 transition-all duration-500 group overflow-hidden ${plan.popular
-                  ? 'border-primary-500/50 dark:border-primary-500/30 shadow-2xl scale-105 z-20'
-                  : 'border-slate-100 dark:border-white/5 opacity-80 hover:opacity-100 scale-100 z-10'
+                ? 'border-primary-500/50 dark:border-primary-500/30 shadow-2xl scale-105 z-20'
+                : 'border-slate-100 dark:border-white/5 opacity-80 hover:opacity-100 scale-100 z-10'
                 }`}
             >
               {plan.popular && (
@@ -136,8 +136,8 @@ export function Pricing() {
               <Link
                 to={plan.buttonLink}
                 className={`block w-full py-5 rounded-[2rem] font-bold text-center transition-all duration-300 shadow-xl hover:scale-[1.02] active:scale-95 ${plan.popular
-                    ? 'bg-primary-500 text-white hover:bg-primary-600'
-                    : 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100'
+                  ? 'bg-primary-500 text-white hover:bg-primary-600'
+                  : 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100'
                   }`}
               >
                 {plan.buttonText}
@@ -192,5 +192,6 @@ export function Pricing() {
   );
 }
 
-import { Check, Sparkles, Gift, Crown } from 'lucide-react';
+
+// ... existing code removed redundant import ...
 

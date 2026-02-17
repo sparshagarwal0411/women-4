@@ -108,10 +108,10 @@ export function MentorshipNetwork() {
         id: msg.id,
         sender: msg.sender_name,
         content: msg.content,
-        timestamp: new Date(msg.created_at).toLocaleTimeString('en-US', {
+        timestamp: msg.created_at ? new Date(msg.created_at).toLocaleTimeString('en-US', {
           hour: '2-digit',
           minute: '2-digit'
-        }),
+        }) : 'Recent',
         is_own: msg.is_own
       })));
     }

@@ -185,7 +185,7 @@ export const MoneyMap: React.FC = () => {
   };
 
   const lineLabels = records.map((r) =>
-    new Date(r.time).toLocaleDateString("en-IN")
+    r.time ? new Date(r.time).toLocaleDateString("en-IN") : "Unknown"
   );
   const balances = records.map((r) => r.balance);
 
@@ -350,7 +350,7 @@ export const MoneyMap: React.FC = () => {
                     <tbody>
                       {[...records].reverse().map((r) => (
                         <tr key={r.id} className={r.balance < 0 ? "text-red-600" : "text-green-600"}>
-                          <td className="py-2">{new Date(r.time).toLocaleString()}</td>
+                          <td className="py-2">{r.time ? new Date(r.time).toLocaleString() : "Unknown"}</td>
                           <td className="py-2">{r.type}</td>
                           <td className="py-2">{r.item}</td>
                           <td className="py-2">{formatMoney(r.amount)}</td>
