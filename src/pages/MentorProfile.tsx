@@ -1,11 +1,17 @@
 import { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Shield, Calendar, Award, Users, MessageCircle } from 'lucide-react';
+import { UserNavbar } from '../components/UserNavbar';
+import { Footer } from '../components/Footer';
+import { User, Shield, Calendar, TrendingUp, Award, Users, MessageCircle, Video } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { MentorshipNetwork } from './MentorshipNetwork';
 
+interface MentorProfileProps {
+  darkMode: boolean;
+  toggleDarkMode: () => void;
+}
 
-
-export function MentorProfile() {
+export function MentorProfile({ darkMode, toggleDarkMode }: MentorProfileProps) {
   const navigate = useNavigate();
   const username = localStorage.getItem('username') || 'Mentor';
   const userRole = localStorage.getItem('userRole') || 'mentor';
@@ -34,6 +40,8 @@ export function MentorProfile() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-pink-50/30 to-purple-50/30 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <UserNavbar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+
       <main className="pt-24 pb-16 px-6">
         <div className="max-w-6xl mx-auto">
           {/* Profile Header */}
@@ -157,6 +165,7 @@ export function MentorProfile() {
           </motion.div>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

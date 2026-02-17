@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Send, MessageCircle, Users, Search, Video, Phone, Sparkles, CheckCircle } from 'lucide-react';
 import { useInView } from '../hooks/useInView';
-import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 
 interface Message {
@@ -60,7 +59,6 @@ const quickPrompts = [
 ];
 
 export function MentorshipNetwork() {
-  const { profile } = useAuth();
   const [ref, isInView] = useInView();
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
@@ -68,19 +66,6 @@ export function MentorshipNetwork() {
   const [searchTerm, setSearchTerm] = useState('');
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [selectedFocus, setSelectedFocus] = useState<string | null>(null);
-
-  // Personalization mapping
-  useEffect(() => {
-    if (profile?.business_about) {
-      const focus = profile.business_about.toLowerCase();
-
-      // Auto-filter based on industry focus
-      if (focus.includes('tech') || focus.includes('digital') || focus.includes('software')) setSelectedFocus('Tech');
-      else if (focus.includes('funding') || focus.includes('finance') || focus.includes('money')) setSelectedFocus('Funding');
-      else if (focus.includes('brand') || focus.includes('marketing')) setSelectedFocus('Branding');
-      else if (focus.includes('retail') || focus.includes('store') || focus.includes('sales')) setSelectedFocus('Retail');
-    }
-  }, [profile]);
   const subscription = localStorage.getItem('subscription') || 'free';
   const userRole = localStorage.getItem('userRole') || 'user';
   const isPro = subscription === 'pro';
@@ -108,10 +93,10 @@ export function MentorshipNetwork() {
         id: msg.id,
         sender: msg.sender_name,
         content: msg.content,
-        timestamp: msg.created_at ? new Date(msg.created_at).toLocaleTimeString('en-US', {
+        timestamp: new Date(msg.created_at).toLocaleTimeString('en-US', {
           hour: '2-digit',
           minute: '2-digit'
-        }) : 'Recent',
+        }),
         is_own: msg.is_own
       })));
     }

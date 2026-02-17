@@ -15,8 +15,8 @@ export function UserNavbar({ darkMode, toggleDarkMode }: UserNavbarProps) {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const username = profile?.full_name || (profile?.username ? `@${profile.username}` : 'User');
-  const userRole = profile?.role || 'user';
+  const username = profile?.full_name || localStorage.getItem('username') || 'User';
+  const userRole = profile?.role || localStorage.getItem('userRole') || 'user';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -83,7 +83,7 @@ export function UserNavbar({ darkMode, toggleDarkMode }: UserNavbarProps) {
                 <Link
                   key={link.name}
                   to={link.href}
-                  className={`font-xl px-2 py-3 rounded-lg transition-all duration-200 ${isActive
+                  className={`font-small px-2 py-3 rounded-lg transition-all duration-200 ${isActive
                     ? 'text-pink-600 dark:text-pink-300 bg-pink-50 dark:bg-pink-500/10 shadow-sm'
                     : 'text-gray-700 dark:text-gray-200 hover:text-pink-500 dark:hover:text-pink-400 hover:bg-rose-50 dark:hover:bg-gray-800/60'
                     }`}

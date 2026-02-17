@@ -8,20 +8,9 @@ interface HeroProps {
   darkMode: boolean;
 }
 
-import { useAuth } from "../hooks/useAuth";
-
 export default function Hero({ darkMode }: HeroProps) {
   const navigate = useNavigate();
-  const { profile } = useAuth();
 
-  const getPersonalizedMessage = () => {
-    if (!profile?.business_about) return "Your complete platform for learning, mentorship, and digital tools to transform your entrepreneurial dreams into reality.";
-
-    const focus = profile.business_about.toLowerCase();
-    if (focus.includes('tech')) return `Empowering your ${profile.business_about} venture with specialized tech tools, mentorship, and innovation resources.`;
-    if (focus.includes('fashion') || focus.includes('boutique')) return `Elevate your ${profile.business_about} brand with elegant storefronts and industry-specific growth strategies.`;
-    return `Specialized tools and guidance to scale your ${profile.business_about} business and achieve your entrepreneurial goals.`;
-  };
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-slate-50 dark:bg-surface-dark transition-colors duration-500">
       <HeroVisual darkMode={darkMode} />
@@ -68,7 +57,8 @@ export default function Hero({ darkMode }: HeroProps) {
           transition={{ delay: 0.4, duration: 1 }}
           className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-14 max-w-2xl mx-auto leading-relaxed"
         >
-          {getPersonalizedMessage()}
+          Your complete platform for learning, mentorship, and digital tools to
+          transform your entrepreneurial dreams into reality.
         </motion.p>
 
         <motion.div

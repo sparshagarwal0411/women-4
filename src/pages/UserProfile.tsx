@@ -1,49 +1,36 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Shield, Calendar, TrendingUp, Award, Crown, Clock } from 'lucide-react';
+import { UserNavbar } from '../components/UserNavbar';
+import { Footer } from '../components/Footer';
+import { User, Shield, Calendar, TrendingUp, Award, Crown } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useAuth } from '../hooks/useAuth';
 
-export function UserProfile() {
+interface UserProfileProps {
+  darkMode: boolean;
+  toggleDarkMode: () => void;
+}
+
+export function UserProfile({ darkMode, toggleDarkMode }: UserProfileProps) {
   const navigate = useNavigate();
-  const { profile, loading } = useAuth();
-  const [currentTime, setCurrentTime] = useState(new Date());
-
-  // Username and role from localStorage or profile
-  // Username and role derived from profile
-  const username = profile?.full_name || 'Entrepreneur';
-  const userRole = profile?.role || 'user';
-  const subscription = localStorage.getItem('subscription') || 'free'; // Subscription still uses local/db hybrid for demo
+  const username = localStorage.getItem('username') || 'User';
+  const userRole = localStorage.getItem('userRole') || 'user';
+  const subscription = localStorage.getItem('subscription') || 'free';
   const isPro = subscription === 'pro';
-
-  // Real-time clock effect
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
+  const businessAbout = localStorage.getItem('businessAbout') || '';
+  const businessLevel = localStorage.getItem('businessLevel') || '';
+  const teamSize = localStorage.getItem('teamSize') || '';
 
   useEffect(() => {
-    if (!loading && !profile) {
+
+    if (!localStorage.getItem('username')) {
       navigate('/login');
     }
-  }, [profile, loading, navigate]);
-
-  // Dynamic stats calculation
-  const enrolledCourses = Array.isArray(JSON.parse(localStorage.getItem('enrolledCourses') || '[]'))
-    ? JSON.parse(localStorage.getItem('enrolledCourses') || '[]')
-    : [];
-  const schemesApplied = Array.isArray(JSON.parse(localStorage.getItem('appliedSchemes') || '[]'))
-    ? JSON.parse(localStorage.getItem('appliedSchemes') || '[]')
-    : [];
+  }, [navigate]);
 
   const stats = [
-    { icon: TrendingUp, label: 'Schemes Applied', value: (schemesApplied?.length || 0).toString() },
-    { icon: Award, label: 'Courses Enrolled', value: (enrolledCourses?.length || 0).toString() },
-    {
-      icon: Clock,
-      label: 'Local Time',
-      value: currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-    },
+    { icon: TrendingUp, label: 'Schemes Applied', value: '0' },
+    { icon: Award, label: 'Storefronts Created', value: '0' },
+    { icon: Calendar, label: 'Member Since', value: "5/12/2025" },
   ];
 
   const quickLinks = [
@@ -55,16 +42,10 @@ export function UserProfile() {
     { name: 'Grants', href: '/grants', description: 'Explore available grants for your business' },
   ];
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500"></div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-pink-50/30 to-purple-50/30 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <UserNavbar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+
       <main className="pt-24 pb-16 px-6">
         <div className="max-w-6xl mx-auto">
           {/* Profile Header */}
@@ -79,17 +60,9 @@ export function UserProfile() {
                 {username.charAt(0).toUpperCase()}
               </div>
               <div className="flex-1 text-center md:text-left">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
-                  <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                    Welcome, {username}!
-                  </h1>
-                  <div className="px-4 py-2 bg-white/50 dark:bg-gray-800/50 rounded-2xl border border-pink-100 dark:border-white/5 flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-pink-500" />
-                    <span className="text-sm font-medium text-slate-600 dark:text-slate-300">
-                      {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
-                    </span>
-                  </div>
-                </div>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                  Welcome, {username}!
+                </h1>
                 <div className="flex items-center justify-center md:justify-start gap-2 text-gray-600 dark:text-gray-300 mb-4 flex-wrap">
                   <Shield className="w-5 h-5 text-pink-500" />
                   <span className="capitalize">{userRole}</span>
@@ -100,13 +73,25 @@ export function UserProfile() {
                     </span>
                   )}
                 </div>
-                {profile?.business_about && (
-                  <p className="text-sm text-gray-700 dark:text-gray-200 mb-2 font-medium">
-                    Sector: <span className="text-pink-600 dark:text-pink-400">{profile.business_about}</span>
+                {(businessAbout || businessLevel || teamSize) && (
+                  <p className="text-sm text-gray-700 dark:text-gray-200 mb-2">
+                    {businessAbout && <span>{businessAbout}</span>}
+                    {businessLevel && (
+                      <span>
+                        {businessAbout ? ' · ' : ''}
+                        {businessLevel}
+                      </span>
+                    )}
+                    {teamSize && (
+                      <span>
+                        {(businessAbout || businessLevel) ? ' · ' : ''}
+                        Size: {teamSize} people
+                      </span>
+                    )}
                   </p>
                 )}
                 <p className="text-gray-600 dark:text-gray-300">
-                  You're currently in the <span className="font-bold underline decoration-pink-500 decoration-2">{profile?.business_level || 'Exploration'}</span> phase of your journey. Aura is ready to assist you!
+                  Access tools and resources to grow your business. Find schemes, build your storefront, connect with mentors, and manage your finances.
                 </p>
               </div>
             </div>
@@ -122,10 +107,10 @@ export function UserProfile() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="glassmorphism rounded-2xl border border-pink-200/60 dark:border-pink-500/30 shadow-lg p-6 group hover:border-pink-500/50 transition-colors"
+                  className="glassmorphism rounded-2xl border border-pink-200/60 dark:border-pink-500/30 shadow-lg p-6"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center">
                       <Icon className="w-6 h-6 text-white" />
                     </div>
                     <div>
@@ -148,12 +133,9 @@ export function UserProfile() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
           >
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Quick Access
-              </h2>
-              <Link to="/home" className="text-sm text-pink-500 hover:underline">Back to Dashboard</Link>
-            </div>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+              Quick Access
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {quickLinks.map((link, index) => (
                 <motion.div
@@ -182,6 +164,7 @@ export function UserProfile() {
           </motion.div>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

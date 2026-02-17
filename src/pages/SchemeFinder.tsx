@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Search, Filter, ExternalLink, MapPin, Calendar, DollarSign } from 'lucide-react';
 import { useInView } from '../hooks/useInView';
-import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 
 interface Scheme {
@@ -17,7 +16,6 @@ interface Scheme {
 }
 
 export function SchemeFinder() {
-  const { profile } = useAuth();
   const [ref, isInView] = useInView();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -27,26 +25,6 @@ export function SchemeFinder() {
 
   const categories = ['All', 'Manufacturing', 'Technology', 'Agriculture', 'Retail', 'Services', 'Handicrafts', 'Education', 'Healthcare', 'Food & Beverage'];
   const states = ['All', 'Maharashtra', 'Delhi', 'Karnataka', 'Tamil Nadu', 'Gujarat', 'West Bengal', 'Rajasthan', 'Punjab', 'Haryana'];
-
-  // Personalization mapping
-  useEffect(() => {
-    if (profile?.business_about) {
-      const focus = profile.business_about.toLowerCase();
-
-      // Find category match
-      const matchedCategory = categories.find(cat =>
-        cat !== 'All' && (focus.includes(cat.toLowerCase()) || focus.includes(cat.toLowerCase().split(' & ')[0]))
-      );
-      if (matchedCategory) {
-        setSelectedCategory(matchedCategory);
-      }
-
-      // If no search term, use focus as default search to refine results
-      if (!searchTerm) {
-        setSearchTerm(profile.business_about);
-      }
-    }
-  }, [profile]);
 
   // Fallback schemes if database is empty
   const fallbackSchemes: Scheme[] = [

@@ -1,11 +1,16 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, Calendar, TrendingUp, Settings, BarChart, Users, FileText } from 'lucide-react';
+import { UserNavbar } from '../components/UserNavbar';
+import { Footer } from '../components/Footer';
+import { User, Shield, Calendar, TrendingUp, Award, Settings, BarChart, Users, FileText } from 'lucide-react';
 import { motion } from 'framer-motion';
 
+interface AdminProfileProps {
+  darkMode: boolean;
+  toggleDarkMode: () => void;
+}
 
-
-export function AdminProfile() {
+export function AdminProfile({ darkMode, toggleDarkMode }: AdminProfileProps) {
   const navigate = useNavigate();
   const username = localStorage.getItem('username') || 'Admin';
   const userRole = localStorage.getItem('userRole') || 'admin';
@@ -34,6 +39,8 @@ export function AdminProfile() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-pink-50/30 to-purple-50/30 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <UserNavbar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+
       <main className="pt-24 pb-16 px-6">
         <div className="max-w-6xl mx-auto">
           <motion.div
@@ -129,6 +136,7 @@ export function AdminProfile() {
           </motion.div>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

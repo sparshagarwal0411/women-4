@@ -1,7 +1,6 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { Store, Palette, Image, Type, Layout, Eye, Sparkles, CheckCircle, Link as LinkIcon, Tag, Upload, X, Share2, FileImage, FileText } from 'lucide-react';
 import { useInView } from '../hooks/useInView';
-import { useAuth } from '../hooks/useAuth';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
@@ -40,7 +39,6 @@ const colorThemes = [
 ];
 
 export function StorefrontBuilder() {
-  const { profile } = useAuth();
   const [ref, isInView] = useInView();
   const [selectedTemplate, setSelectedTemplate] = useState<number | null>(null);
   const [storeName, setStoreName] = useState('');
@@ -52,26 +50,6 @@ export function StorefrontBuilder() {
   const [logo, setLogo] = useState<string | null>(null);
   const [productImages, setProductImages] = useState<string[]>([]);
   const [isExporting, setIsExporting] = useState(false);
-
-  // Personalization mapping
-  useEffect(() => {
-    if (profile?.business_about) {
-      const focus = profile.business_about.toLowerCase();
-      setStoreName(profile.full_name ? `${profile.full_name}'s Boutique` : '');
-
-      // Auto-template selection
-      if (focus.includes('fashion') || focus.includes('clothing')) setSelectedTemplate(1);
-      else if (focus.includes('craft') || focus.includes('handmade') || focus.includes('handicraft')) setSelectedTemplate(2);
-      else if (focus.includes('food') || focus.includes('organic') || focus.includes('agriculture')) setSelectedTemplate(3);
-      else if (focus.includes('beauty') || focus.includes('wellness') || focus.includes('healthcare')) setSelectedTemplate(4);
-
-      // Auto-theme selection
-      if (focus.includes('fashion')) setSelectedTheme(0); // Rose Pink
-      else if (focus.includes('craft')) setSelectedTheme(1); // Lavender
-      else if (focus.includes('food') || focus.includes('agriculture')) setSelectedTheme(2); // Mint Green
-      else if (focus.includes('beauty')) setSelectedTheme(3); // Coral
-    }
-  }, [profile]);
 
   const logoInputRef = useRef<HTMLInputElement>(null);
   const productImagesInputRef = useRef<HTMLInputElement>(null);
@@ -240,8 +218,8 @@ export function StorefrontBuilder() {
             {[1, 2, 3].map((num) => (
               <div key={num} className="flex items-center">
                 <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${step >= num
-                  ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white'
-                  : 'bg-gray-200 dark:bg-gray-700 text-gray-500'
+                    ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white'
+                    : 'bg-gray-200 dark:bg-gray-700 text-gray-500'
                   }`}>
                   {num}
                 </div>
@@ -280,8 +258,8 @@ export function StorefrontBuilder() {
                 onClick={() => selectedTemplate && setStep(2)}
                 disabled={!selectedTemplate}
                 className={`px-8 py-4 rounded-xl font-semibold transition-all ${selectedTemplate
-                  ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:shadow-lg hover:scale-105'
-                  : 'bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-not-allowed'
+                    ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:shadow-lg hover:scale-105'
+                    : 'bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-not-allowed'
                   }`}
               >
                 Continue to Customization
@@ -354,8 +332,8 @@ export function StorefrontBuilder() {
                         key={index}
                         onClick={() => setSelectedTheme(index)}
                         className={`cursor-pointer p-4 rounded-xl border-2 transition-all hover:scale-105 ${selectedTheme === index
-                          ? 'border-pink-500 shadow-lg'
-                          : 'border-gray-200 dark:border-gray-700'
+                            ? 'border-pink-500 shadow-lg'
+                            : 'border-gray-200 dark:border-gray-700'
                           }`}
                       >
                         <div className="flex gap-2 mb-2">

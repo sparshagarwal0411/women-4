@@ -23,35 +23,6 @@ import MoneyMap from './pages/loanmonitor';
 import About from './pages/About';
 import CompleteProfile from './pages/CompleteProfile';
 import { AuthCallback } from './pages/AuthCallback';
-import { useAuth } from './hooks/useAuth';
-import { UserNavbar } from './components/UserNavbar';
-import { AIAssistant } from './components/AIAssistant';
-import ScrollToTop from './components/ScrollToTop';
-
-function Navbar({ darkMode, toggleDarkMode }: { darkMode: boolean; toggleDarkMode: () => void }) {
-  const { user, loading } = useAuth();
-  if (loading) return null;
-  return user ? (
-    <UserNavbar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
-  ) : (
-    <Navigation darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
-  );
-}
-
-function HomeWrapper({ darkMode }: { darkMode: boolean }) {
-  const { user, loading } = useAuth();
-
-  // If loading and we don't have a user yet, we can still show the landing page
-  // The UserNavbar and other components handle their own loading states if needed
-  return (
-    <>
-      <Home darkMode={darkMode} />
-      <Footer />
-      {user && <AIAssistant />}
-      {!user && !loading && <StickyButtons />}
-    </>
-  );
-}
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
@@ -65,17 +36,14 @@ function App() {
   }, []);
 
   const toggleDarkMode = () => {
-    const newMode = !darkMode;
-    setDarkMode(newMode);
+    setDarkMode(!darkMode);
     document.documentElement.classList.toggle('dark');
-    localStorage.setItem('darkMode', newMode.toString());
+    localStorage.setItem('darkMode', (!darkMode).toString());
   };
 
   return (
     <Router>
-      <ScrollToTop />
       <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
-        <Navbar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
         <Routes>
           <Route path="/login" element={
             <>
@@ -91,70 +59,89 @@ function App() {
           } />
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/profile" element={
-            <ProtectedRoute darkMode={darkMode} toggleDarkMode={toggleDarkMode}>
-              <UserProfile />
-            </ProtectedRoute>
+            <>
+              <UserProfile darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+              <StickyButtons />
+            </>
           } />
           <Route path="/mentor-profile" element={
-            <ProtectedRoute darkMode={darkMode} toggleDarkMode={toggleDarkMode}>
-              <MentorProfile />
-            </ProtectedRoute>
+            <>
+              <MentorProfile darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+              <StickyButtons />
+            </>
           } />
           <Route path="/admin-profile" element={
-            <ProtectedRoute darkMode={darkMode} toggleDarkMode={toggleDarkMode}>
-              <AdminProfile />
-            </ProtectedRoute>
+            <>
+              <AdminProfile darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+              <StickyButtons />
+            </>
           } />
           <Route path="/scheme-finder" element={
             <ProtectedRoute darkMode={darkMode} toggleDarkMode={toggleDarkMode}>
               <SchemeFinder />
+              <StickyButtons />
             </ProtectedRoute>
           } />
           <Route path="/storefront" element={
             <ProtectedRoute darkMode={darkMode} toggleDarkMode={toggleDarkMode}>
               <StorefrontBuilder />
+              <StickyButtons />
             </ProtectedRoute>
           } />
           <Route path="/grants" element={
             <ProtectedRoute darkMode={darkMode} toggleDarkMode={toggleDarkMode}>
               <Grants />
+              <StickyButtons />
             </ProtectedRoute>
           } />
           <Route path="/connect" element={
             <ProtectedRoute darkMode={darkMode} toggleDarkMode={toggleDarkMode}>
               <Connect />
+              <StickyButtons />
             </ProtectedRoute>
           } />
           <Route path="/community" element={
             <ProtectedRoute darkMode={darkMode} toggleDarkMode={toggleDarkMode}>
               <Community />
+              <StickyButtons />
             </ProtectedRoute>
           } />
           <Route path="/mentorship" element={
             <ProtectedRoute darkMode={darkMode} toggleDarkMode={toggleDarkMode}>
               <MentorshipNetwork />
+              <StickyButtons />
             </ProtectedRoute>
           } />
           <Route path="/mentor-mentorship" element={
             <ProtectedRoute darkMode={darkMode} toggleDarkMode={toggleDarkMode}>
               <MentorMentorship />
+              <StickyButtons />
             </ProtectedRoute>
           } />
+
           <Route path="/finance" element={
             <ProtectedRoute darkMode={darkMode} toggleDarkMode={toggleDarkMode}>
               <FinanceToolkit />
+              <StickyButtons />
             </ProtectedRoute>
           } />
           <Route path="/skill-up" element={
             <ProtectedRoute darkMode={darkMode} toggleDarkMode={toggleDarkMode}>
               <SkillUp />
+              <StickyButtons />
             </ProtectedRoute>
           } />
           <Route path="/" element={
-            <HomeWrapper darkMode={darkMode} />
+            <>
+              <Navigation darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+              <Home darkMode={darkMode} />
+              <Footer />
+              <StickyButtons />
+            </>
           } />
           <Route path="/faqs" element={
             <>
+              <Navigation darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
               <FAQs />
               <Footer />
               <StickyButtons />
@@ -162,6 +149,7 @@ function App() {
           } />
           <Route path="/loan-monitor" element={
             <>
+              <Navigation darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
               <MoneyMap />
               <Footer />
               <StickyButtons />
@@ -169,6 +157,7 @@ function App() {
           } />
           <Route path="/about" element={
             <>
+              <Navigation darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
               <About />
               <Footer />
               <StickyButtons />
