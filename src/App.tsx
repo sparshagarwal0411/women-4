@@ -21,6 +21,8 @@ import { AdminProfile } from './pages/AdminProfile';
 import FAQs from './pages/faqs';
 import MoneyMap from './pages/loanmonitor';
 import About from './pages/About';
+import CompleteProfile from './pages/CompleteProfile';
+import { AuthCallback } from './pages/AuthCallback';
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
@@ -49,6 +51,13 @@ function App() {
               <StickyButtons />
             </>
           } />
+          <Route path="/complete-profile" element={
+            <>
+              <CompleteProfile darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+              <StickyButtons />
+            </>
+          } />
+          <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/profile" element={
             <>
               <UserProfile darkMode={darkMode} toggleDarkMode={toggleDarkMode} />

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Send, MessageCircle, Users, Search, Video, Phone, Sparkles, CheckCircle } from 'lucide-react';
 import { useInView } from '../hooks/useInView';
+import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 
 interface Message {
@@ -59,6 +60,7 @@ const quickPrompts = [
 ];
 
 export function MentorshipNetwork() {
+  const { profile } = useAuth();
   const [ref, isInView] = useInView();
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
@@ -66,6 +68,19 @@ export function MentorshipNetwork() {
   const [searchTerm, setSearchTerm] = useState('');
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [selectedFocus, setSelectedFocus] = useState<string | null>(null);
+
+  // Personalization mapping
+  useEffect(() => {
+    if (profile?.business_about) {
+      const focus = profile.business_about.toLowerCase();
+
+      // Auto-filter based on industry focus
+      if (focus.includes('tech') || focus.includes('digital') || focus.includes('software')) setSelectedFocus('Tech');
+      else if (focus.includes('funding') || focus.includes('finance') || focus.includes('money')) setSelectedFocus('Funding');
+      else if (focus.includes('brand') || focus.includes('marketing')) setSelectedFocus('Branding');
+      else if (focus.includes('retail') || focus.includes('store') || focus.includes('sales')) setSelectedFocus('Retail');
+    }
+  }, [profile]);
   const subscription = localStorage.getItem('subscription') || 'free';
   const userRole = localStorage.getItem('userRole') || 'user';
   const isPro = subscription === 'pro';
@@ -218,8 +233,8 @@ export function MentorshipNetwork() {
                 key={area}
                 onClick={() => setSelectedFocus(selectedFocus === area ? null : area)}
                 className={`px-3 py-1.5 rounded-full text-sm border transition ${selectedFocus === area
-                    ? 'bg-pink-100 dark:bg-pink-500/10 border-pink-400 text-pink-700 dark:text-pink-200'
-                    : 'bg-white/70 dark:bg-gray-800/70 border-pink-200/60 dark:border-pink-500/30 text-gray-700 dark:text-gray-200 hover:border-pink-400'
+                  ? 'bg-pink-100 dark:bg-pink-500/10 border-pink-400 text-pink-700 dark:text-pink-200'
+                  : 'bg-white/70 dark:bg-gray-800/70 border-pink-200/60 dark:border-pink-500/30 text-gray-700 dark:text-gray-200 hover:border-pink-400'
                   }`}
               >
                 {area}
@@ -315,8 +330,8 @@ export function MentorshipNetwork() {
                         className={`flex ${message.is_own ? 'justify-end' : 'justify-start'}`}
                       >
                         <div className={`max-w-xs lg:max-w-md ${message.is_own
-                            ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white'
-                            : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-white'
+                          ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white'
+                          : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-white'
                           } rounded-2xl px-4 py-3 shadow-md`}>
                           <p className="text-sm mb-1">{message.content}</p>
                           <p className={`text-xs ${message.is_own ? 'text-pink-100' : 'text-gray-500 dark:text-gray-400'

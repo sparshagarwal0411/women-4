@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Search, Filter, ExternalLink, MapPin, Calendar, DollarSign } from 'lucide-react';
 import { useInView } from '../hooks/useInView';
+import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 
 interface Scheme {
@@ -16,6 +17,7 @@ interface Scheme {
 }
 
 export function SchemeFinder() {
+  const { profile } = useAuth();
   const [ref, isInView] = useInView();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -25,6 +27,19 @@ export function SchemeFinder() {
 
   const categories = ['All', 'Manufacturing', 'Technology', 'Agriculture', 'Retail', 'Services', 'Handicrafts', 'Education', 'Healthcare', 'Food & Beverage'];
   const states = ['All', 'Maharashtra', 'Delhi', 'Karnataka', 'Tamil Nadu', 'Gujarat', 'West Bengal', 'Rajasthan', 'Punjab', 'Haryana'];
+
+  // Personalization mapping
+  useEffect(() => {
+    if (profile?.business_about) {
+      const focus = profile.business_about.toLowerCase();
+      const matchedCategory = categories.find(cat =>
+        cat !== 'All' && (focus.includes(cat.toLowerCase()) || focus.includes(cat.toLowerCase().split(' & ')[0]))
+      );
+      if (matchedCategory) {
+        setSelectedCategory(matchedCategory);
+      }
+    }
+  }, [profile]);
 
   // Fallback schemes if database is empty
   const fallbackSchemes: Scheme[] = [
@@ -184,7 +199,7 @@ export function SchemeFinder() {
 
   const filteredSchemes = schemes.filter(scheme => {
     const matchesSearch = scheme.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         scheme.description.toLowerCase().includes(searchTerm.toLowerCase());
+      scheme.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'All' || scheme.category === selectedCategory;
     const matchesState = selectedState === 'All' || scheme.state === selectedState;
     return matchesSearch && matchesCategory && matchesState;
@@ -195,9 +210,8 @@ export function SchemeFinder() {
       <div className="max-w-7xl mx-auto">
         <div
           ref={ref}
-          className={`text-center mb-12 transition-all duration-1000 ${
-            isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-          }`}
+          className={`text-center mb-12 transition-all duration-1000 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+            }`}
         >
           <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
             Scheme Finder
@@ -281,9 +295,8 @@ function SchemeCard({ scheme, index }: { scheme: Scheme; index: number }) {
   return (
     <div
       ref={ref}
-      className={`glassmorphism p-6 rounded-3xl hover:scale-105 transition-all duration-500 ${
-        isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-      }`}
+      className={`glassmorphism p-6 rounded-3xl hover:scale-105 transition-all duration-500 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+        }`}
       style={{ transitionDelay: `${index * 100}ms` }}
     >
       <div className="flex items-start justify-between mb-4">

@@ -1,6 +1,7 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Store, Palette, Image, Type, Layout, Eye, Sparkles, CheckCircle, Link as LinkIcon, Tag, Upload, X, Share2, FileImage, FileText } from 'lucide-react';
 import { useInView } from '../hooks/useInView';
+import { useAuth } from '../hooks/useAuth';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
@@ -39,6 +40,7 @@ const colorThemes = [
 ];
 
 export function StorefrontBuilder() {
+  const { profile } = useAuth();
   const [ref, isInView] = useInView();
   const [selectedTemplate, setSelectedTemplate] = useState<number | null>(null);
   const [storeName, setStoreName] = useState('');
@@ -50,7 +52,27 @@ export function StorefrontBuilder() {
   const [logo, setLogo] = useState<string | null>(null);
   const [productImages, setProductImages] = useState<string[]>([]);
   const [isExporting, setIsExporting] = useState(false);
-  
+
+  // Personalization mapping
+  useEffect(() => {
+    if (profile?.business_about) {
+      const focus = profile.business_about.toLowerCase();
+      setStoreName(profile.full_name ? `${profile.full_name}'s Boutique` : '');
+
+      // Auto-template selection
+      if (focus.includes('fashion') || focus.includes('clothing')) setSelectedTemplate(1);
+      else if (focus.includes('craft') || focus.includes('handmade') || focus.includes('handicraft')) setSelectedTemplate(2);
+      else if (focus.includes('food') || focus.includes('organic') || focus.includes('agriculture')) setSelectedTemplate(3);
+      else if (focus.includes('beauty') || focus.includes('wellness') || focus.includes('healthcare')) setSelectedTemplate(4);
+
+      // Auto-theme selection
+      if (focus.includes('fashion')) setSelectedTheme(0); // Rose Pink
+      else if (focus.includes('craft')) setSelectedTheme(1); // Lavender
+      else if (focus.includes('food') || focus.includes('agriculture')) setSelectedTheme(2); // Mint Green
+      else if (focus.includes('beauty')) setSelectedTheme(3); // Coral
+    }
+  }, [profile]);
+
   const logoInputRef = useRef<HTMLInputElement>(null);
   const productImagesInputRef = useRef<HTMLInputElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
@@ -96,7 +118,7 @@ export function StorefrontBuilder() {
 
   const exportAsPNG = async () => {
     if (!previewRef.current) return;
-    
+
     setIsExporting(true);
     try {
       const canvas = await html2canvas(previewRef.current, {
@@ -104,7 +126,7 @@ export function StorefrontBuilder() {
         scale: 2,
         logging: false,
       });
-      
+
       const dataUrl = canvas.toDataURL('image/png');
       const link = document.createElement('a');
       link.download = `${storeName || 'storefront'}-storefront.png`;
@@ -120,7 +142,7 @@ export function StorefrontBuilder() {
 
   const exportAsPDF = async () => {
     if (!previewRef.current) return;
-    
+
     setIsExporting(true);
     try {
       const canvas = await html2canvas(previewRef.current, {
@@ -128,7 +150,7 @@ export function StorefrontBuilder() {
         scale: 2,
         logging: false,
       });
-      
+
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -138,7 +160,7 @@ export function StorefrontBuilder() {
       const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
       const imgX = (pdfWidth - imgWidth * ratio) / 2;
       const imgY = 0;
-      
+
       pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
       pdf.save(`${storeName || 'storefront'}-storefront.pdf`);
     } catch (error) {
@@ -151,7 +173,7 @@ export function StorefrontBuilder() {
 
   const shareAsPNG = async () => {
     if (!previewRef.current) return;
-    
+
     setIsExporting(true);
     try {
       const canvas = await html2canvas(previewRef.current, {
@@ -159,7 +181,7 @@ export function StorefrontBuilder() {
         scale: 2,
         logging: false,
       });
-      
+
       canvas.toBlob((blob) => {
         if (blob && navigator.share) {
           const file = new File([blob], `${storeName || 'storefront'}-storefront.png`, { type: 'image/png' });
@@ -198,9 +220,8 @@ export function StorefrontBuilder() {
       <div className="max-w-7xl mx-auto">
         <div
           ref={ref}
-          className={`text-center mb-12 transition-all duration-1000 ${
-            isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-          }`}
+          className={`text-center mb-12 transition-all duration-1000 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+            }`}
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full bg-white/60 dark:bg-gray-800/60 backdrop-blur-md border border-pink-200/50 dark:border-pink-500/30">
             <Store className="w-4 h-4 text-pink-500" />
@@ -218,17 +239,15 @@ export function StorefrontBuilder() {
           <div className="flex justify-center items-center gap-4 mb-8">
             {[1, 2, 3].map((num) => (
               <div key={num} className="flex items-center">
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${
-                  step >= num
-                    ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white'
-                    : 'bg-gray-200 dark:bg-gray-700 text-gray-500'
-                }`}>
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${step >= num
+                  ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white'
+                  : 'bg-gray-200 dark:bg-gray-700 text-gray-500'
+                  }`}>
                   {num}
                 </div>
                 {num < 3 && (
-                  <div className={`w-24 h-1 ${
-                    step > num ? 'bg-gradient-to-r from-pink-500 to-purple-500' : 'bg-gray-200 dark:bg-gray-700'
-                  }`}></div>
+                  <div className={`w-24 h-1 ${step > num ? 'bg-gradient-to-r from-pink-500 to-purple-500' : 'bg-gray-200 dark:bg-gray-700'
+                    }`}></div>
                 )}
               </div>
             ))}
@@ -260,11 +279,10 @@ export function StorefrontBuilder() {
               <button
                 onClick={() => selectedTemplate && setStep(2)}
                 disabled={!selectedTemplate}
-                className={`px-8 py-4 rounded-xl font-semibold transition-all ${
-                  selectedTemplate
-                    ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:shadow-lg hover:scale-105'
-                    : 'bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-not-allowed'
-                }`}
+                className={`px-8 py-4 rounded-xl font-semibold transition-all ${selectedTemplate
+                  ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:shadow-lg hover:scale-105'
+                  : 'bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-not-allowed'
+                  }`}
               >
                 Continue to Customization
               </button>
@@ -335,11 +353,10 @@ export function StorefrontBuilder() {
                       <div
                         key={index}
                         onClick={() => setSelectedTheme(index)}
-                        className={`cursor-pointer p-4 rounded-xl border-2 transition-all hover:scale-105 ${
-                          selectedTheme === index
-                            ? 'border-pink-500 shadow-lg'
-                            : 'border-gray-200 dark:border-gray-700'
-                        }`}
+                        className={`cursor-pointer p-4 rounded-xl border-2 transition-all hover:scale-105 ${selectedTheme === index
+                          ? 'border-pink-500 shadow-lg'
+                          : 'border-gray-200 dark:border-gray-700'
+                          }`}
                       >
                         <div className="flex gap-2 mb-2">
                           {theme.colors.map((color, i) => (
@@ -473,10 +490,10 @@ export function StorefrontBuilder() {
               Preview Your Store
             </h2>
             <div className="glassmorphism p-8 rounded-3xl max-w-5xl mx-auto mb-8">
-              <div 
+              <div
                 ref={previewRef}
                 className="rounded-xl p-8 mb-6 shadow-lg relative overflow-hidden"
-                style={{ 
+                style={{
                   background: `linear-gradient(135deg, ${colorThemes[selectedTheme].colors[0]} 0%, ${colorThemes[selectedTheme].colors[1]} 50%, ${colorThemes[selectedTheme].colors[2]} 100%)`,
                   minHeight: '600px'
                 }}
@@ -574,7 +591,7 @@ export function StorefrontBuilder() {
                     Edit Store
                   </button>
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-4">
                   <button
                     onClick={exportAsPNG}
@@ -593,7 +610,7 @@ export function StorefrontBuilder() {
                     {isExporting ? 'Exporting...' : 'Save as PDF'}
                   </button>
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-4">
                   <button
                     onClick={shareAsPNG}
@@ -633,9 +650,8 @@ function TemplateCard({ template, index, selected, onSelect }: {
     <div
       ref={ref}
       onClick={onSelect}
-      className={`cursor-pointer glassmorphism rounded-3xl overflow-hidden transition-all duration-500 ${
-        isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-      } ${selected ? 'ring-4 ring-pink-500 scale-105' : 'hover:scale-105'}`}
+      className={`cursor-pointer glassmorphism rounded-3xl overflow-hidden transition-all duration-500 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+        } ${selected ? 'ring-4 ring-pink-500 scale-105' : 'hover:scale-105'}`}
       style={{ transitionDelay: `${index * 100}ms` }}
     >
       <div className="relative">
